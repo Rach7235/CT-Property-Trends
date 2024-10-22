@@ -1,33 +1,59 @@
 const express = require('express');
 const oracledb = require('oracledb');
-
 const app = express();
+
+// Fill in your personal oracle information here. Don't forget to remove when uploading to Github for security purposes
+const dbInfo = {
+    user: 'your-oracle-username',
+    password: 'your-oracle-password',
+    connectString: 'oracle.cise.ufl.edu:1521/orcl'
+};
 
 app.listen(2000, () => {
     console.log('server successfully listening on port 2000')
 })
 
-app.get('/', (req, res) => {
-    res.send('Hello from the server!')
-})
-
-app.get('/data', async (req, res) => {
-    async function fetchData() {
+// API to fetch town names for selection
+app.get('/towns', async (req, res) => {
         try {
-            const connection = await oracledb.getConnection({
-                user: 'your_oracle_username',
-                password: 'your_oracle_password',
-                connectString: 'oracle.cise.ufl.edu:1521/orcl' // we all created this
-            });
-
-            // Doesn't totally work yet, trying to test oracle connection with a query
-            const result = await connection.execute('SELECT * FROM TEST')
-            return result;
+            const connection = await oracledb.getConnection(dbInfo);
+            const towns = await connection.execute('SELECT Town FROM "M.ENGERT".Address')
+            res.json(towns.rows);
         } catch (error) {
-            return error;
+            res.status(500).send('Error fetching towns');
         }
+ });
+
+// API to fetch residential type names for selection
+app.get('/residential-type', async (req, res) => {
+    try {
+        const connection = await oracledb.getConnection(dbInfo);
+        const residentialType = await connection.execute('SELECT Type_Name FROM "M.ENGERT".Residential_Type')
+        res.json(residentialType.rows);
+    } catch (error) {
+        res.status(500).send('Error retrieving residential types');
     }
-    fetchData().then(Res => {res.send(Res);})
-        .catch(error => {res.send(error)})
 });
 
+// function to test database connection
+ /* async function run() {
+    try {
+        const connection = await oracledb.getConnection({
+            user: 'your-oracle-username',
+            password: 'your-oracle-password',
+            connectString: 'oracle.cise.ufl.edu:1521/orcl'
+        });
+
+        console.log('Connected to the database!');
+
+        const result = await connection.execute('SELECT * FROM borders');
+
+        console.log(result.rows);
+
+    } catch (err) {
+        console.error('Error connecting to the database:', err);
+    }
+}
+*/
+
+// run();
