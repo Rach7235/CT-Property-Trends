@@ -12,7 +12,7 @@ The CT Property Trends application allows users to gain deeper insight on real e
 # How It Works
 Users can specify the information they’re looking for by filtering by town, specific year and month (or a range of years), sales amounts, sales ratios, and different property types from a submission form
 
-Then, users will visualize the data through two primary graphical representations: an interactive map and a comprehensive trend graph.
+Then, users will visualize the data through two primary graphical representations: an interactive map and a comprehensive trend graph
 
 # Project Startup Instructions
 First, clone the repository
@@ -33,6 +33,26 @@ First, clone the repository
 The database used for this project is Oracle
 - A UF VPN must be connected for database use
 - This database runs on host oracle.cise.ufl.edu, port 1521, and service orcl
+### Dataset
+The dataset used for the project was sourced from the Connecticut Office of Policy and Management, which maintains a comprehensive listing of real estate sales across the state
+
+This dataset encompasses all real estate transactions with a sales price of $2,000 or greater between October 1st and September 30th annually, spanning from 2001 to 2022 grand list year
+
+Dataset fields include:
+* List Year: Indicates the grand list year of the sale
+* Date Recorded: The exact date when the sale was recorded
+* Town: The municipality where the property is located
+* Property Address: The specific address of the sold property
+* Assessed Value: The value assigned to the property for taxation purposes
+* Sale Amount: The actual sale price of the property
+* Sales Ratio: A ratio indicating the relationship between the assessed value and the sale amount
+* Property Type: Categorizes properties as residential, condo, commercial, or vacant land
+* Residential Type: Provides additional detail on the type of residential property
+* Non Use Code: Non usable sale code typically means the sale price is not reliable for use in the determination of a property value
+* Assessor Remarks: Remarks from the assessor
+* OPM remarks: Remarks from OPM
+* Location: Latitude/longitude coordinates
+
 
 ### Tables
 All insertion commands for each table can be found in the database directory
