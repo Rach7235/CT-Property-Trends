@@ -17,8 +17,9 @@ app.listen(2000, () => {
 app.get('/towns', async (req, res) => {
         try {
             const connection = await oracledb.getConnection(dbInfo);
-            const towns = await connection.execute('SELECT Town FROM "M.ENGERT".Address')
+            const towns = await connection.execute('SELECT Town FROM Address')
             res.json(towns.rows);
+            console.log(towns.rows)
         } catch (error) {
             res.status(500).send('Error fetching towns');
         }
@@ -28,15 +29,17 @@ app.get('/towns', async (req, res) => {
 app.get('/residential-type', async (req, res) => {
     try {
         const connection = await oracledb.getConnection(dbInfo);
-        const residentialType = await connection.execute('SELECT Type_Name FROM "M.ENGERT".Residential_Type')
+        const residentialType = await connection.execute('SELECT Type_Name FROM Residential_Type')
         res.json(residentialType.rows);
+        console.log(residentialType.rows)
     } catch (error) {
         res.status(500).send('Error retrieving residential types');
     }
 });
 
+/*
 // function to test database connection
- /* async function run() {
+ async function run() {
     try {
         const connection = await oracledb.getConnection({
             user: 'your-oracle-username',
@@ -46,7 +49,7 @@ app.get('/residential-type', async (req, res) => {
 
         console.log('Connected to the database!');
 
-        const result = await connection.execute('SELECT * FROM borders');
+        const result = await connection.execute('SELECT * FROM address');
 
         console.log(result.rows);
 

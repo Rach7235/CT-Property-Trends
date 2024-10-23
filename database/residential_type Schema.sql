@@ -1,0 +1,4 @@
+CREATE TABLE Residential_Type (
+    ID INTEGER NOT NULL PRIMARY KEY,
+    Type_Name VARCHAR2(255) NOT NULL
+);

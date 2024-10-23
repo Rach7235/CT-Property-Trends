@@ -1,0 +1,5 @@
+CREATE TABLE Address (
+    ID INTEGER NOT NULL PRIMARY KEY,
+    Town VARCHAR2(255) NOT NULL,
+    Address_Lines VARCHAR2(255)
+);
