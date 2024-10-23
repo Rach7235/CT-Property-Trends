@@ -1,9 +1,9 @@
 const express = require('express');
 const oracledb = require('oracledb');
 const cors = require('cors');
-
 const app = express();
 app.use(cors())
+app.use(express.json())
 
 const PORT = 2000;
 
@@ -11,8 +11,8 @@ const PORT = 2000;
 // Don't forget to remove when uploading to Github for security purposes
 // Need to change this and the port to environment variables
 const dbInfo = {
-    user: 'rpatella',
-    password: 'LxzvEXdqOYcMwJcxWHnuKIYt',
+    user: 'your-oracle-username',
+    password: 'your-oracle-password',
     connectString: 'oracle.cise.ufl.edu:1521/orcl'
 };
 
@@ -26,10 +26,8 @@ app.get('/towns', async (req, res) => {
         try {
             const connection = await oracledb.getConnection(dbInfo);
             console.log('Database connected!')
-            //const towns = await connection.execute('SELECT distinct(town) FROM address')
             const result = await connection.execute('SELECT distinct Town FROM Address')
             const towns = result.rows.map(row => ({ name: row[0] }));
-          //  res.json(towns.rows);
             res.json(towns);
             console.log(towns)
         } catch (error) {
@@ -54,11 +52,9 @@ app.get('/residential-type', async (req, res) => {
     try {
         const connection = await oracledb.getConnection(dbInfo);
         console.log('Database connected!')
-       // const residentialType = await connection.execute('SELECT Type_Name FROM Residential_Type')
         const result = await connection.execute('SELECT Type_Name FROM Residential_Type')
         // Map residential type rows to a name for the selection
         const residentialTypes = result.rows.map(row => ({name: row[0]}));
-       // res.json(residentialType.rows);
         res.json(residentialTypes);
         console.log(residentialTypes)
     } catch (error) {
@@ -85,8 +81,6 @@ app.post('/form-submission', async (req, res) => {
             year, minSalePrice, maxSalePrice, minSaleRatio, maxSaleRatio, minSaleYear, maxSaleYear,
             selectedTown, selectedResidentialType, trendQuery
         } = req.body;
-
-        // Logging to ensure the data values are correct
 
         // Logging to ensure the data values are correct
         console.log('User Data:', {

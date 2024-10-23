@@ -76,6 +76,7 @@ export default function App() {
         setTrendQuery(event.target.value);
     };
 
+    // Function to fetch town names from backend
     useEffect(() => {
         const fetchTowns = () => {
             axios.get('http://localhost:2000/towns')
@@ -106,9 +107,8 @@ export default function App() {
     }, []);
 
 
-
     // Function to submit user fields to backend
-   /*  const handleSubmit =  async () => {
+     const handleSubmit =  async () => {
         // Schema for data from user fields
         const userData = {
             year,
@@ -132,8 +132,6 @@ export default function App() {
             alert('Form submission unsuccessful!');
         }
     };
-    */
-
 
     return (
             <div style={{padding: '20px'}}>
@@ -179,6 +177,7 @@ export default function App() {
                         <label htmlFor="select1">Town</label>
                         <select value={selectedTown}
                                 onChange={handleTown}>
+                            <option value="">Select</option>
                             {towns.map((towns, index) => (
                                 <option key={index} value={towns.name}>
                                     {towns.name}
@@ -213,6 +212,7 @@ export default function App() {
                         <label htmlFor="select2">Residential Type</label>
                         <select value={selectedResidentialType}
                                 onChange={handleResidentialType}>
+                            <option value="">Select</option>
                             {residentialType.map((residentialType, index) => (
                                 <option key={index} value={residentialType.name}>
                                     {residentialType.name}
@@ -245,8 +245,9 @@ export default function App() {
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
                         <label htmlFor="select3">Trend Selection</label>
-                        <select value = {trendQuery}
+                        <select value={trendQuery}
                                 onChange={handleTrendQuery}>
+                            <option value="">Select</option>
                             <option value="Avg Sales Amount">Average Sales Amount</option>
                             <option value="Total Sales Volume">Total Sales Volume</option>
                             <option value="Avg Sales Ratio">Average Sales Ratio</option>
@@ -257,6 +258,7 @@ export default function App() {
                 </div>
                 <div style={{marginTop: '20px'}}>
                     <button
+                            type="button"
                             style={{
                                 padding: '10px 20px',
                                 backgroundColor: 'blue',
@@ -264,7 +266,7 @@ export default function App() {
                                 border: 'none',
                                 borderRadius: '4px'
                             }}
-                            // onClick = {handleSubmit}
+                            onClick = {handleSubmit}
                           >
                         Submit
                     </button>
