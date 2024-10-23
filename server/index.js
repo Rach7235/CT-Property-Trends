@@ -1,62 +1,105 @@
 const express = require('express');
 const oracledb = require('oracledb');
-const app = express();
+const cors = require('cors');
 
-// Fill in your personal oracle information here. Don't forget to remove when uploading to Github for security purposes
+const app = express();
+app.use(cors())
+
+const PORT = 2000;
+
+// Fill in your personal oracle information here.
+// Don't forget to remove when uploading to Github for security purposes
+// Need to change this and the port to environment variables
 const dbInfo = {
-    user: 'your-oracle-username',
-    password: 'your-oracle-password',
+    user: 'rpatella',
+    password: 'LxzvEXdqOYcMwJcxWHnuKIYt',
     connectString: 'oracle.cise.ufl.edu:1521/orcl'
 };
 
-app.listen(2000, () => {
+app.listen(PORT, () => {
     console.log('server successfully listening on port 2000')
 })
 
 // API to fetch town names for selection
 app.get('/towns', async (req, res) => {
+    let connection;
         try {
             const connection = await oracledb.getConnection(dbInfo);
-            const towns = await connection.execute('SELECT Town FROM Address')
-            res.json(towns.rows);
-            console.log(towns.rows)
+            console.log('Database connected!')
+            //const towns = await connection.execute('SELECT distinct(town) FROM address')
+            const result = await connection.execute('SELECT distinct Town FROM Address')
+            const towns = result.rows.map(row => ({ name: row[0] }));
+          //  res.json(towns.rows);
+            res.json(towns);
+            console.log(towns)
         } catch (error) {
+            console.error('Error fetching towns:', error.message);
             res.status(500).send('Error fetching towns');
+        }
+    finally {
+            if (connection) {
+                try {
+                    // Close the connection after use
+                    await connection.close();
+                } catch (err) {
+                    console.error('Error closing connection', err);
+                }
+            }
         }
  });
 
 // API to fetch residential type names for selection
 app.get('/residential-type', async (req, res) => {
+    let connection;
     try {
         const connection = await oracledb.getConnection(dbInfo);
-        const residentialType = await connection.execute('SELECT Type_Name FROM Residential_Type')
-        res.json(residentialType.rows);
-        console.log(residentialType.rows)
+        console.log('Database connected!')
+       // const residentialType = await connection.execute('SELECT Type_Name FROM Residential_Type')
+        const result = await connection.execute('SELECT Type_Name FROM Residential_Type')
+        // Map residential type rows to a name for the selection
+        const residentialTypes = result.rows.map(row => ({name: row[0]}));
+       // res.json(residentialType.rows);
+        res.json(residentialTypes);
+        console.log(residentialTypes)
     } catch (error) {
+        console.error('Error retrieving residential types:', error.message);
         res.status(500).send('Error retrieving residential types');
+    }
+   finally {
+        if (connection) {
+            try {
+                // Close the connection after use
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing connection', err);
+            }
+        }
     }
 });
 
-/*
-// function to test database connection
- async function run() {
+// Function to receive user data for query formulation
+app.post('/form-submission', async (req, res) => {
     try {
-        const connection = await oracledb.getConnection({
-            user: 'your-oracle-username',
-            password: 'your-oracle-password',
-            connectString: 'oracle.cise.ufl.edu:1521/orcl'
+        // Extract form data from the request body
+        const {
+            year, minSalePrice, maxSalePrice, minSaleRatio, maxSaleRatio, minSaleYear, maxSaleYear,
+            selectedTown, selectedResidentialType, trendQuery
+        } = req.body;
+
+        // Logging to ensure the data values are correct
+
+        // Logging to ensure the data values are correct
+        console.log('User Data:', {
+            year, minSalePrice, maxSalePrice,
+            minSaleRatio, maxSaleRatio, minSaleYear,
+            maxSaleYear, selectedTown, selectedResidentialType, trendQuery
         });
 
-        console.log('Connected to the database!');
-
-        const result = await connection.execute('SELECT * FROM address');
-
-        console.log(result.rows);
-
-    } catch (err) {
-        console.error('Error connecting to the database:', err);
+        res.status(200).send('Form submission successful!')
+    } catch (error) {
+        console.error('Error retrieving form submission data:', error.message);
+        res.status(500).send('Error retrieving form submission data');
     }
-}
-*/
+});
 
-// run();
+
