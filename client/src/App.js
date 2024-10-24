@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { MultiSelect } from "react-multi-select-component";
 
 export default function App() {
     // States to hold user selected variables
@@ -16,10 +17,10 @@ export default function App() {
     const [maxSaleYear, setMaxSaleYear] = useState('');
 
     const [towns, setTowns] = useState([]);
-    const [selectedTown, setSelectedTown] = useState('');
+    const [selectedTown, setSelectedTown] = useState([]);
 
     const [residentialType, setResidentialType] = useState([]);
-    const [selectedResidentialType, setSelectedResidentialType] = useState('');
+    const [selectedResidentialType, setSelectedResidentialType] = useState([]);
 
     const [trendQuery, setTrendQuery] = useState('');
 
@@ -62,13 +63,13 @@ export default function App() {
     };
 
     // Function to capture town name
-    const handleTown = (event) => {
-        setSelectedTown(event.target.value);
+    const handleTown = (townArray) => {
+        setSelectedTown(townArray);
     };
 
     // Function to capture residential type
-    const handleResidentialType = (event) => {
-        setSelectedResidentialType(event.target.value);
+    const handleResidentialType = (residentialTypeArray) => {
+        setSelectedResidentialType(residentialTypeArray);
     };
 
     // Function to capture residential type
@@ -175,15 +176,12 @@ export default function App() {
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
                         <label htmlFor="select1">Town</label>
-                        <select value={selectedTown}
-                                onChange={handleTown}>
-                            <option value="">Select</option>
-                            {towns.map((towns, index) => (
-                                <option key={index} value={towns.name}>
-                                    {towns.name}
-                                </option>
-                            ))}
-                        </select>
+                        <MultiSelect
+                            options = {towns}
+                            value = {selectedTown}
+                            onChange={handleTown}
+                            labelledBy="Select Towns"
+                        />
                     </div>
                 </div>
 
@@ -210,15 +208,12 @@ export default function App() {
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
                         <label htmlFor="select2">Residential Type</label>
-                        <select value={selectedResidentialType}
-                                onChange={handleResidentialType}>
-                            <option value="">Select</option>
-                            {residentialType.map((residentialType, index) => (
-                                <option key={index} value={residentialType.name}>
-                                    {residentialType.name}
-                                </option>
-                            ))}
-                        </select>
+                        <MultiSelect
+                            options = {residentialType}
+                            value = {selectedResidentialType}
+                            onChange={handleResidentialType}
+                            labelledBy="Select Residential Types"
+                        />
                     </div>
                 </div>
 

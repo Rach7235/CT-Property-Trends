@@ -27,7 +27,9 @@ app.get('/towns', async (req, res) => {
             const connection = await oracledb.getConnection(dbInfo);
             console.log('Database connected!')
             const result = await connection.execute('SELECT distinct Town FROM Address')
-            const towns = result.rows.map(row => ({ name: row[0] }));
+            // label, value is the format of the multiselect component
+            // will be an array instead of a single value since user can select multiple things
+            const towns = result.rows.map(row => ({ label: row[0], value: row[0] }));
             res.json(towns);
             console.log(towns)
         } catch (error) {
@@ -53,8 +55,9 @@ app.get('/residential-type', async (req, res) => {
         const connection = await oracledb.getConnection(dbInfo);
         console.log('Database connected!')
         const result = await connection.execute('SELECT Type_Name FROM Residential_Type')
-        // Map residential type rows to a name for the selection
-        const residentialTypes = result.rows.map(row => ({name: row[0]}));
+        // label, value is the format of the multiselect component
+        // will be an array instead of a single value since user can select multiple things
+        const residentialTypes = result.rows.map(row => ({ label: row[0], value: row[0] }));
         res.json(residentialTypes);
         console.log(residentialTypes)
     } catch (error) {
