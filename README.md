@@ -16,16 +16,17 @@ Then, users will visualize the data through two primary graphical representation
 
 # Project Startup Instructions
 First, clone the repository
+cd ./CT-Property-Trends
 
 ## Frontend
-1. cd client
+1. cd ./client
 2. npm install
 3. npm start 
 - The frontend runs on localhost:3000 by default
 
 ## Backend
-1. cd server 
-2. npm init
+1. cd ./server 
+2. npm install
 3. nodemon index.js
 - The backend runs on port 2000 by default
 

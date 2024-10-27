@@ -4,20 +4,20 @@ const cors = require('cors');
 const app = express();
 app.use(cors())
 app.use(express.json())
-
-const PORT = 2000;
+const dotenv = require('dotenv');
+dotenv.config({path:"./.env"});
 
 // Fill in your personal oracle information here.
 // Don't forget to remove when uploading to Github for security purposes
 // Need to change this and the port to environment variables
 const dbInfo = {
-    user: 'your-oracle-username',
-    password: 'your-oracle-password',
-    connectString: 'oracle.cise.ufl.edu:1521/orcl'
+    user: process.env.USER_NAME,
+    password: process.env.PASSWORD,
+    connectString: process.env.CONNECT_STRING
 };
 
-app.listen(PORT, () => {
-    console.log('server successfully listening on port 2000')
+app.listen(process.env.PORT, () => {
+    console.log(`server successfully listening on port ${process.env.PORT}`)
 })
 
 // API to fetch town names for selection
@@ -26,7 +26,7 @@ app.get('/towns', async (req, res) => {
         try {
             const connection = await oracledb.getConnection(dbInfo);
             console.log('Database connected!')
-            const result = await connection.execute('SELECT distinct Town FROM Address')
+            const result = await connection.execute('SELECT distinct Town FROM "M.ENGERT".Address')
             // label, value is the format of the multiselect component
             // will be an array instead of a single value since user can select multiple things
             const towns = result.rows.map(row => ({ label: row[0], value: row[0] }));
@@ -54,7 +54,7 @@ app.get('/residential-type', async (req, res) => {
     try {
         const connection = await oracledb.getConnection(dbInfo);
         console.log('Database connected!')
-        const result = await connection.execute('SELECT Type_Name FROM Residential_Type')
+        const result = await connection.execute('SELECT Type_Name FROM "M.ENGERT".Residential_Type')
         // label, value is the format of the multiselect component
         // will be an array instead of a single value since user can select multiple things
         const residentialTypes = result.rows.map(row => ({ label: row[0], value: row[0] }));

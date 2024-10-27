@@ -80,7 +80,7 @@ export default function App() {
     // Function to fetch town names from backend
     useEffect(() => {
         const fetchTowns = () => {
-            axios.get('http://localhost:2000/towns')
+            axios.get(`http://localhost:${process.env.REACT_APP_SERVER_PORT}/towns`)
                 .then(response => {
                     setTowns(response.data);
                     console.log(response.data);
@@ -95,7 +95,7 @@ export default function App() {
     // Function to fetch residential type names from backend
     useEffect(() => {
         const fetchResidentialType = () => {
-            axios.get('http://localhost:2000/residential-type')
+            axios.get(`http://localhost:${process.env.REACT_APP_SERVER_PORT}/residential-type`)
                 .then(response => {
                     setResidentialType(response.data);
                     console.log(response.data);
@@ -125,7 +125,7 @@ export default function App() {
         };
 
         try {
-            const response = await axios.post('http://localhost:2000/form-submission', userData);
+            const response = await axios.post(`http://localhost:${process.env.REACT_APP_SERVER_PORT}/form-submission`, userData);
             console.log('Form submission successful!', response.data)
             alert('Form submission successful!');
         } catch (error) {
