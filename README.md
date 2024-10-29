@@ -27,7 +27,7 @@ cd ./CT-Property-Trends
 ## Backend
 1. cd ./server 
 2. npm install
-3. nodemon index.js
+3. npx nodemon index.js
 - The backend runs on port 2000 by default
 
 ## Database
