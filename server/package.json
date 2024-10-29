@@ -16,6 +16,6 @@
     "oracledb": "^6.6.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.1.7"
   }
 }
