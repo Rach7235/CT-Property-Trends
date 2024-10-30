@@ -7,7 +7,7 @@ The CT Property Trends application allows users to gain deeper insight on real e
 * Assist homeowners and sellers on determining the best time to sell their home is and what price according to market value is fair when making an offer to buy a house
 * Assist realtors in being able to  analyze past sales amount trends to determine the best value to price a home that would attract buyers and also sell for a reasonable amount
 * Assist investors in making  better informed decisions about where to buy and sell properties for investment purposes by analyzing the historical trends in property value and sales volume based on location
-* Assist apparaisers in determining accurate home valuations that reflect the current market prices by analyzing past real estate market trends
+* Assist appraisers in determining accurate home valuations that reflect the current market prices by analyzing past real estate market trends
 
 # How It Works
 Users can specify the information they’re looking for by filtering by town, specific year and month (or a range of years), sales amounts, sales ratios, and different property types from a submission form
