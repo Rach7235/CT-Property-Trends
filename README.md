@@ -33,11 +33,11 @@ cd ./CT-Property-Trends
 ## Database
 The database used for this project is Oracle
 - A UF VPN must be connected for database use
-- This database runs on host oracle.cise.ufl.edu, port 1521, and service orcl
+
 ### Dataset
 The dataset used for the project was sourced from the Connecticut Office of Policy and Management, which maintains a comprehensive listing of real estate sales across the state
 
-This dataset encompasses all real estate transactions with a sales price of $2,000 or greater between October 1st and September 30th annually, spanning from 2001 to 2022 grand list year
+This dataset encompasses all real estate transactions with a sales price of $2,000 or greater between October 1st and September 30th annually, spanning from 2007 to 2022 grand list year
 
 Dataset fields include:
 * List Year: Indicates the grand list year of the sale

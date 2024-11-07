@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as constant from "../utils/const.js";
 
 const apiHost = `http://localhost:${process.env.REACT_APP_SERVER_PORT}`;
 
@@ -6,7 +7,7 @@ const apiHost = `http://localhost:${process.env.REACT_APP_SERVER_PORT}`;
 // Fetch towns
 export const fetchTowns = async () => {
     try {
-        const response = await axios.get(`${apiHost}/towns`);
+        const response = await axios.get(`${apiHost}/${constant.Town}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching towns:', error);
@@ -18,7 +19,7 @@ export const fetchTowns = async () => {
 // Fetch residential types
 export const fetchResidentialTypes = async () => {
     try {
-        const response = await axios.get(`${apiHost}/residential-type`);
+        const response = await axios.get(`${apiHost}/${constant.resType}`);
         return response.data;
     } catch (error) {
         console.error('Error fetching residential types:', error);
@@ -29,7 +30,7 @@ export const fetchResidentialTypes = async () => {
 // Submit user fields to backend
 export const submitForm = async (userData) => {
     try {
-        const response = await axios.post(`${apiHost}/form-submission`, userData);
+        const response = await axios.post(`${apiHost}/${constant.formSub}`, userData);
         return response.data;
     } catch (error) {
         console.error('Form submission error:', error);
