@@ -27,13 +27,14 @@ export const fetchResidentialTypes = async () => {
     }
 };
 
-// Submit user fields to backend
-export const submitForm = async (userData) => {
-    try {
-        const response = await axios.post(`${apiHost}/${constant.formSub}`, userData);
-        return response.data;
-    } catch (error) {
-        console.error('Form submission error:', error);
-        throw error;
-    }
+
+// Submit form data and retrieve query results
+export const submitFormAndQuery = async (userData) => {
+     try {
+         const response = await axios.post(`${apiHost}/${constant.queryResult}`, userData);
+         return response.data;
+     } catch (error) {
+         console.error('Form submission and query error:', error);
+         throw error;
+     }
 };

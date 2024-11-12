@@ -35,48 +35,20 @@ app.get('/residential-type', async (req, res) => {
     }
 });
 
-// Used to temporarily store form data for use in making the specified query
-let formData;
-
-// Function to receive user data for query formulation
-app.post('/form-submission', async (req, res) => {
+// API to submit user fields and generate query
+app.post('/submit-and-query', async (req, res) => {
     try {
-        // Extract form data from the request body
-        const {
-            year, minSalePrice, maxSalePrice, minSaleRatio, maxSaleRatio, minSaleYear, maxSaleYear,
-            selectedTown, selectedResidentialType, trendQuery
-        } = req.body;
-
-        formData = {
-            year,
-            minSalePrice,
-            maxSalePrice,
-            minSaleRatio,
-            maxSaleRatio,
-            minSaleYear,
-            maxSaleYear,
-            selectedTown,
-            selectedResidentialType,
-            trendQuery
-        };
-
-        // Logging to ensure the data values are correct
-        console.log('User Data:', formData);
-
-        res.status(200).send('Form submission successful!')
-    } catch (error) {
-        console.error('Error retrieving form submission data:', error.message);
-        res.status(500).send('Error retrieving form submission data');
-    }
-});
-
-// API to fetch the selected query results
-app.get('/query', async (req, res) => {
-    try {
+        // Extract form data from request body
+        const formData = req.body;
+        // Log the received form data to view its structure and values
+        console.log('Received form data:', req.body);
+        // Create and execute query
         const queryResults = await CTService.getQueryResults(formData);
         res.json(queryResults);
     } catch (error) {
         console.error('Error retrieving query results:', error.message);
         res.status(500).send('Error retrieving query results');
     }
-});
+})
+
+
