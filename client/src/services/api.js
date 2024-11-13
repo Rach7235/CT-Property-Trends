@@ -38,3 +38,14 @@ export const submitFormAndQuery = async (userData) => {
          throw error;
      }
 };
+
+// Fetch sale years
+export const fetchYears = async () => {
+    try {
+        const response = await axios.get(`${apiHost}/${constant.Year}`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching years:', error);
+        throw error;
+    }
+}

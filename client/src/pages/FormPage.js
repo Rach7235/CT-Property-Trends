@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import {fetchTowns, fetchResidentialTypes, submitForm, submitFormAndQuery} from '../services/api.js';
+import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from '../services/api.js';
 import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
-import {Link} from "react-router-dom";
+
 
 
 export default function FormPage() {
     // States to hold user selected variables
-    const [year, setYear] = useState(2006);
+    const [year, setYear] = useState(2007);
+    const [yearRange, setYearRange] = useState({min: 2007, max: 2021});
 
     // Tracks if user has started typing so verification error messages hide until interaction
     const [isTyping, setIsTyping] = useState(false);
 
     const [minSalePrice, setMinSalePrice] = useState('');
     const [minSalePriceVerify, setMinSalePriceVerify] = useState(false);
+    const [minSalePriceErrorMessage, setMinSalePriceErrorMessage] = useState('');
     const [maxSalePrice, setMaxSalePrice] = useState('');
     const [maxSalePriceVerify, setMaxSalePriceVerify] = useState(false);
+    const [maxSalePriceErrorMessage, setMaxSalePriceErrorMessage] = useState('');
 
 
     const [minSaleRatio, setMinSaleRatio] = useState('');
@@ -25,9 +28,11 @@ export default function FormPage() {
     const [maxSaleRatioVerify, setMaxSaleRatioVerify] = useState(false);
 
     const [minSaleYear, setMinSaleYear] = useState('');
+    const [minSalesYearErrorMessage, setSalesYearMinErrorMessage] = useState('');
     const [minSaleYearVerify, setMinSaleYearVerify] = useState(false);
     const [maxSaleYear, setMaxSaleYear] = useState('');
     const [maxSaleYearVerify, setMaxSaleYearVerify] = useState(false);
+    const [maxSalesYearErrorMessage, setSalesYearMaxErrorMessage] = useState('');
 
 
     const [towns, setTowns] = useState([]);
@@ -41,15 +46,16 @@ export default function FormPage() {
     const [trendQuery, setTrendQuery] = useState('');
     const [trendQueryVerify, setTrendQueryVerify] = useState(false);
 
-// Below are the functions to capture the different user fields
-// event.target.value will constantly update the state value whenever a change occurs in the field
+    // Below are the functions to capture the different user fields
+    // event.target.value will constantly update the state value whenever a change occurs in the field
 
-// Function to capture year from slider
+    // Function to capture year from slider
     const handleYear = (event) => {
-        setYear(event.target.value);
+        const year = event.target.value;
+        setYear(year);
     }
 
-// Function to capture minimum sales price
+    // Function to capture minimum sales price
     const handleMinSalePrice = (event) => {
         const minSalePrice = event.target.value;
         setIsTyping(true);
@@ -64,9 +70,18 @@ export default function FormPage() {
         else {
             setMinSalePriceVerify(false);
         }
+
+        // Check that the minimum sales price is less than the maximum sales price inputted by user
+        if (Number(minSalePrice) > Number(maxSalePrice) && maxSalePrice !=='') {
+            setMinSalePriceErrorMessage("Minimum sales price must be less than maximum sales price.");
+        }
+        // Clear error message when valid
+        else {
+            setMinSalePriceErrorMessage('');
+        }
     };
 
-// Function to capture maximum sales price
+    // Function to capture maximum sales price
     const handleMaxSalePrice = (event) => {
             const maxSalePrice = event.target.value;
             setIsTyping(true);
@@ -81,9 +96,18 @@ export default function FormPage() {
             else {
                 setMaxSalePriceVerify(false);
             }
-        };
 
-// Function to capture minimum sales ratio
+        // Check that the maximum sales price is greater than the minimum sales price inputted by user
+        if (Number(maxSalePrice) < Number(minSalePrice) && minSalePrice !== '') {
+            setMaxSalePriceErrorMessage("Maximum sales price must be greater than minimum sales price.");
+        }
+        // Clear error message when valid
+        else {
+            setMaxSalePriceErrorMessage('');
+        }
+    };
+
+        // Function to capture minimum sales ratio
         const handleMinSaleRatio = (event) => {
             const minSaleRatio = event.target.value;
             setIsTyping(true);
@@ -100,7 +124,7 @@ export default function FormPage() {
             }
         };
 
-// Function to capture maximum sales ratio
+        // Function to capture maximum sales ratio
         const handleMaxSaleRatio = (event) => {
             const maxSaleRatio = event.target.value;
             setMaxSaleRatio(maxSaleRatio);
@@ -116,7 +140,7 @@ export default function FormPage() {
             }
         };
 
-// Function to capture minimum sale year
+        // Function to capture minimum sale year
         const handleMinSaleYear = (event) => {
             const minSaleYear = event.target.value;
             setIsTyping(true);
@@ -131,9 +155,17 @@ export default function FormPage() {
             else {
                 setMinSaleYearVerify(false);
             }
+
+            // Check that minimum sales year is less than maximum sales year
+            if (Number(minSaleYear) > Number(maxSaleYear) && maxSaleYear !== '') {
+                setSalesYearMinErrorMessage('Minimum sales year must be less than maximum sales year.');
+            } else {
+                // Clear error message when valid
+                setSalesYearMinErrorMessage('');
+            }
         };
 
-// Function to capture maximum sale year
+        // Function to capture maximum sale year
         const handleMaxSaleYear = (event) => {
             const maxSaleYear = event.target.value;
             setIsTyping(true);
@@ -148,19 +180,27 @@ export default function FormPage() {
             else {
                 setMaxSaleYearVerify(false);
             }
+
+            // Check that maximum sales year is greater than minimum sales year
+            if (Number(maxSaleYear) < Number(minSaleYear) && minSaleYear !== '') {
+                setSalesYearMaxErrorMessage('Maximum sales year must be greater than minimum sales year.');
+            } else {
+                // Clear error message when valid
+                setSalesYearMaxErrorMessage('');
+            }
         };
 
-// Function to capture town name
+        // Function to capture town name
         const handleTown = (townArray) => {
             setSelectedTown(townArray);
         };
 
-// Function to capture residential type
+        // Function to capture residential type
         const handleResidentialType = (residentialTypeArray) => {
             setSelectedResidentialType(residentialTypeArray);
         };
 
-// Function to capture trend query
+        // Function to capture trend query
         const handleTrendQuery = (event) => {
             const trendQuery = event.target.value;
             setTrendQuery(trendQuery);
@@ -174,6 +214,22 @@ export default function FormPage() {
                 setTrendQueryVerify(false);
             }
         };
+
+    // Function to clear the user input
+    // Useful if user wants to make another query without refreshing/leaving the page or deleting all their input
+    const clearInput = () => {
+        setYear('');
+        setMinSalePrice('');
+        setMaxSalePrice('');
+        setMinSaleRatio('');
+        setMaxSaleRatio('');
+        setMinSaleYear('');
+        setMaxSaleYear('');
+        setSelectedTown([]);
+        setSelectedResidentialType([]);
+        setTrendQuery('');
+        alert("Fields successfully cleared!")
+    };
 
         // Function to fetch town names from backend
         useEffect(() => {
@@ -212,7 +268,14 @@ export default function FormPage() {
             getResidentialTypes();
         }, []);
 
-
+        // Function to fetch sale year range for slider from backend
+        useEffect(() => {
+            const getYearRange = async () => {
+                const range = await fetchYears();
+                setYearRange(range);
+            }
+            getYearRange();
+            }, []);
 
         // Function to submit user fields to backend
         const handleSubmit = async () => {
@@ -257,14 +320,18 @@ export default function FormPage() {
                     <input
                         type="range"
                         id="year-slider"
-                        // Minimum sales year was 2006 in dataset
-                        min="2006"
-                        // Maximum sales year was 2021 in dataset
-                        max="2021"
+                        // Minimum sales year was 2007 in dataset
+                        max={yearRange.maximumYear}
+                        // Maximum sales year was 2022 in dataset
+                        min={yearRange.minimumYear}
                         value={year}
                         // Year increments 1 at a time on the slider
                         step="1"
                         onChange={handleYear}
+                        style={{
+                            width: '300px',
+                            height: '20px',
+                        }}
                     />
                 </div>
 
@@ -278,9 +345,12 @@ export default function FormPage() {
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
                                onChange={handleMinSalePrice}
                         />
-                        {!minSalePriceVerify && isTyping  && (
+                        {!minSalePriceVerify && isTyping && !minSalePriceErrorMessage && (
                             <p style={{ color: 'red' }}>Please enter a valid non-negative number.</p>
                         )}
+                         {minSalePriceErrorMessage && (
+                            <p style={{ color: 'red' }}>{minSalePriceErrorMessage}</p>
+                         )}
                     </div>
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
@@ -291,8 +361,11 @@ export default function FormPage() {
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
                                onChange={handleMaxSalePrice}
                         />
-                        {!maxSalePriceVerify && isTyping && (
+                        {!maxSalePriceVerify && isTyping && !maxSalePriceErrorMessage && (
                             <p style={{color: 'red'}}>Please enter a valid non-negative number.</p>
+                        )}
+                        {maxSalePriceErrorMessage  && (
+                            <p style={{ color: 'red' }}>{maxSalePriceErrorMessage}</p>
                         )}
                     </div>
 
@@ -317,8 +390,11 @@ export default function FormPage() {
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
                                onChange={handleMinSaleYear}
                         />
-                        {!minSaleYearVerify && isTyping && (
+                        {!minSaleYearVerify && isTyping && !minSalesYearErrorMessage && (
                             <p style={{ color: 'red' }}>Sales year must be between 2006 and 2021</p>
+                        )}
+                        {minSalesYearErrorMessage && (
+                            <p style={{ color: 'red' }}>{minSalesYearErrorMessage}</p>
                         )}
                     </div>
 
@@ -330,8 +406,11 @@ export default function FormPage() {
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
                                onChange={handleMaxSaleYear}
                         />
-                        {!maxSaleYearVerify && isTyping  && (
+                        {!maxSaleYearVerify && isTyping && !maxSalesYearErrorMessage && (
                             <p style={{color: 'red'}}>Sales year must be between 2006 and 2021</p>
+                        )}
+                        {maxSalesYearErrorMessage && (
+                            <p style={{ color: 'red' }}>{maxSalesYearErrorMessage}</p>
                         )}
                     </div>
 
@@ -392,7 +471,7 @@ export default function FormPage() {
                         type="button"
                         style={{
                             padding: '10px 20px',
-                            backgroundColor: 'blue',
+                            backgroundColor: '#0047AB',
                             color: 'white',
                             border: 'none',
                             borderRadius: '4px'
@@ -401,19 +480,18 @@ export default function FormPage() {
                     >
                         Submit
                     </button>
-                    <Link to="/">
-                        <button
-                            style={{
-                                padding: '10px 20px',
-                                backgroundColor: 'blue',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px'
-                            }}
-                        >
-                            Go to Home Page
-                        </button>
-                    </Link>
+                    <button
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#0047AB',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px'
+                        }}
+                        onClick={clearInput}
+                    >
+                        Clear
+                    </button>
                 </div>
             </div>
         );

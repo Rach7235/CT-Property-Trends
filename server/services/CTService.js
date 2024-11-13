@@ -28,6 +28,16 @@ const getResidentialTypes = async () => {
     return residentialTypes;
 };
 
+const getYearRange = async() => {
+    let connection = await db.startConnection()
+    const result = await connection.execute('SELECT MIN(extract(YEAR from sale_date)) AS minimumYear, MAX(extract(YEAR from sale_date))AS maximumYear FROM "M.ENGERT".SALES_INFO')
+
+    const [minimumYear, maximumYear] = result.rows[0];
+    await db.closeConnection();
+
+    return {minimumYear, maximumYear};
+}
+
 // returns the results of the query specified by the user through the formData
 const getQueryResults = async (formData) => {
     let query = await formulateQuery(formData)
@@ -135,5 +145,6 @@ const formulateWhereClause = async (formData) => {
 module.exports = {
     getTowns,
     getResidentialTypes,
-    getQueryResults
+    getQueryResults,
+    getYearRange
 };

@@ -35,6 +35,17 @@ app.get('/residential-type', async (req, res) => {
     }
 });
 
+// API to fetch sale year range for slider
+app.get('/years', async (req, res) => {
+    try {
+        const years = await CTService.getYearRange();
+        res.json(years);
+    } catch (error) {
+        console.error('Error retrieving years:', error.message);
+        res.status(500).send('Error retrieving years');
+        }
+});
+
 // API to submit user fields and generate query
 app.post('/submit-and-query', async (req, res) => {
     try {
@@ -50,5 +61,7 @@ app.post('/submit-and-query', async (req, res) => {
         res.status(500).send('Error retrieving query results');
     }
 })
+
+
 
 
