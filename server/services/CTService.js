@@ -1,48 +1,40 @@
 //This file handles querying the database and all related helper functions
 
-// Importing constants and db
+// Importing constants
 const ServConst = require('../constants/ServConst');
-const db = require('../db');
 
-const getTowns = async () => {
+const getTowns = async (connection) => {
 
-    let connection = await db.startConnection()
     const result = await connection.execute('SELECT distinct Town FROM "M.ENGERT".Address')
     // label, value is the format of the multiselect component
     // will be an array instead of a single value since user can select multiple things
     const towns = result.rows.map(row => ({ label: row[0], value: row[0] }));
-    await db.closeConnection();
 
     return towns;
 };
 
-const getResidentialTypes = async () => {
+const getResidentialTypes = async (connection) => {
 
-    let connection = await db.startConnection()
     const result = await connection.execute('SELECT Type_Name FROM "M.ENGERT".Residential_Type')
     // label, value is the format of the multiselect component
     // will be an array instead of a single value since user can select multiple things
     const residentialTypes = result.rows.map(row => ({ label: row[0], value: row[0] }));
-    await db.closeConnection();
 
     return residentialTypes;
 };
 
-const getYearRange = async() => {
-    let connection = await db.startConnection()
+const getYearRange = async(connection) => {
     const result = await connection.execute('SELECT MIN(extract(YEAR from sale_date)) AS minimumYear, MAX(extract(YEAR from sale_date))AS maximumYear FROM "M.ENGERT".SALES_INFO')
 
     const [minimumYear, maximumYear] = result.rows[0];
-    await db.closeConnection();
 
     return {minimumYear, maximumYear};
 }
 
 // returns the results of the query specified by the user through the formData
-const getQueryResults = async (formData) => {
+const getQueryResults = async (formData, connection) => {
     let query = await formulateQuery(formData)
 
-    let connection = await db.startConnection()
     // Logging to ensure the query is correct
     console.log('Query:', query);
     const result = await connection.execute(query)
@@ -61,7 +53,6 @@ const getQueryResults = async (formData) => {
         // Add newRows (rows with column data) to the results
         queryResults.push(newRow);
     }
-    await db.closeConnection();
 
     return queryResults;
 };

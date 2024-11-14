@@ -15,23 +15,23 @@ export default function FormPage() {
     const [isTyping, setIsTyping] = useState(false);
 
     const [minSalePrice, setMinSalePrice] = useState('');
-    const [minSalePriceVerify, setMinSalePriceVerify] = useState(false);
+    const [minSalePriceVerify, setMinSalePriceVerify] = useState(true);
     const [minSalePriceErrorMessage, setMinSalePriceErrorMessage] = useState('');
     const [maxSalePrice, setMaxSalePrice] = useState('');
-    const [maxSalePriceVerify, setMaxSalePriceVerify] = useState(false);
+    const [maxSalePriceVerify, setMaxSalePriceVerify] = useState(true);
     const [maxSalePriceErrorMessage, setMaxSalePriceErrorMessage] = useState('');
 
 
     const [minSaleRatio, setMinSaleRatio] = useState('');
-    const [minSaleRatioVerify, setMinSaleRatioVerify] = useState(false);
+    const [minSaleRatioVerify, setMinSaleRatioVerify] = useState(true);
     const [maxSaleRatio, setMaxSaleRatio] = useState('');
-    const [maxSaleRatioVerify, setMaxSaleRatioVerify] = useState(false);
+    const [maxSaleRatioVerify, setMaxSaleRatioVerify] = useState(true);
 
     const [minSaleYear, setMinSaleYear] = useState('');
     const [minSalesYearErrorMessage, setSalesYearMinErrorMessage] = useState('');
-    const [minSaleYearVerify, setMinSaleYearVerify] = useState(false);
+    const [minSaleYearVerify, setMinSaleYearVerify] = useState(true);
     const [maxSaleYear, setMaxSaleYear] = useState('');
-    const [maxSaleYearVerify, setMaxSaleYearVerify] = useState(false);
+    const [maxSaleYearVerify, setMaxSaleYearVerify] = useState(true);
     const [maxSalesYearErrorMessage, setSalesYearMaxErrorMessage] = useState('');
 
 
@@ -43,8 +43,8 @@ export default function FormPage() {
     const [selectedResidentialType, setSelectedResidentialType] = useState([]);
     const [residentialTypeOptions, setResidentialTypeOptions] = useState([]);
 
-    const [trendQuery, setTrendQuery] = useState('');
-    const [trendQueryVerify, setTrendQueryVerify] = useState(false);
+    const [trendQuery, setTrendQuery] = useState("Avg Sales Amount");
+    const [trendQueryVerify, setTrendQueryVerify] = useState(true);
 
     // Below are the functions to capture the different user fields
     // event.target.value will constantly update the state value whenever a change occurs in the field
@@ -149,7 +149,7 @@ export default function FormPage() {
             // Must be a number between years 2006 - 2021 (inclusive) and cannot be negative
             // ^/d*$ is regex that allows zero or more digits.
             // Can be zero digits if user wants to leave field empty
-            if (/^\d*$/.test(minSaleYear) && (minSaleYear === "" || (Number(minSaleYear) >= 2006 && Number(minSaleYear) <= 2021))) {
+            if (/^\d*$/.test(minSaleYear) && (minSaleYear === '' || (Number(minSaleYear) >= 2006 && Number(minSaleYear) <= 2021))) {
                 setMinSaleYearVerify(true);
             }
             else {
@@ -174,7 +174,7 @@ export default function FormPage() {
             // Must be a number between years 2006 - 2021 (inclusive) and cannot be negative
             // ^/d*$ is regex that allows zero or more digits
             // Can be zero digits if user wants to leave field empty
-            if (/^\d*$/.test(maxSaleYear) && (maxSaleYear === "" || (Number(maxSaleYear) >= 2006 && Number(maxSaleYear) <= 2021))) {
+            if (/^\d*$/.test(maxSaleYear) && (maxSaleYear === '' || (Number(maxSaleYear) >= 2006 && Number(maxSaleYear) <= 2021))) {
                 setMaxSaleYearVerify(true);
             }
             else {
@@ -207,7 +207,7 @@ export default function FormPage() {
 
             // Trend query cannot be empty
             // trim removes whitespace characters
-            if (trendQuery !== "") {
+            if (trendQuery !== '') {
                 setTrendQueryVerify(true);
             }
             else {
@@ -225,9 +225,10 @@ export default function FormPage() {
         setMaxSaleRatio('');
         setMinSaleYear('');
         setMaxSaleYear('');
-        setSelectedTown([]);
-        setSelectedResidentialType([]);
-        setTrendQuery('');
+        setSelectedTown(towns);
+        setSelectedResidentialType(residentialType);
+        setTrendQuery("Avg Sales Amount");
+        setIsTyping(false);
         alert("Fields successfully cleared!")
     };
 
