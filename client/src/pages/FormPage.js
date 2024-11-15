@@ -9,7 +9,7 @@ import {MultiSelect} from 'react-multi-select-component';
 export default function FormPage() {
     // States to hold user selected variables
     const [year, setYear] = useState(2007);
-    const [yearRange, setYearRange] = useState({min: 2007, max: 2021});
+    const [yearRange, setYearRange] = useState({min: 2007, max: 2022});
 
     // Tracks if user has started typing so verification error messages hide until interaction
     const [isTyping, setIsTyping] = useState(false);
@@ -146,10 +146,10 @@ export default function FormPage() {
             setIsTyping(true);
             setMinSaleYear(minSaleYear);
 
-            // Must be a number between years 2006 - 2021 (inclusive) and cannot be negative
+            // Must be a number between years 2007 - 2022 (inclusive) and cannot be negative
             // ^/d*$ is regex that allows zero or more digits.
             // Can be zero digits if user wants to leave field empty
-            if (/^\d*$/.test(minSaleYear) && (minSaleYear === '' || (Number(minSaleYear) >= 2006 && Number(minSaleYear) <= 2021))) {
+            if (/^\d*$/.test(minSaleYear) && (minSaleYear === '' || (Number(minSaleYear) >= 2007 && Number(minSaleYear) <= 2022))) {
                 setMinSaleYearVerify(true);
             }
             else {
@@ -171,10 +171,10 @@ export default function FormPage() {
             setIsTyping(true);
             setMaxSaleYear(maxSaleYear);
 
-            // Must be a number between years 2006 - 2021 (inclusive) and cannot be negative
+            // Must be a number between years 2007 - 2022 (inclusive) and cannot be negative
             // ^/d*$ is regex that allows zero or more digits
             // Can be zero digits if user wants to leave field empty
-            if (/^\d*$/.test(maxSaleYear) && (maxSaleYear === '' || (Number(maxSaleYear) >= 2006 && Number(maxSaleYear) <= 2021))) {
+            if (/^\d*$/.test(maxSaleYear) && (maxSaleYear === '' || (Number(maxSaleYear) >= 2007 && Number(maxSaleYear) <= 2022))) {
                 setMaxSaleYearVerify(true);
             }
             else {
@@ -392,7 +392,7 @@ export default function FormPage() {
                                onChange={handleMinSaleYear}
                         />
                         {!minSaleYearVerify && isTyping && !minSalesYearErrorMessage && (
-                            <p style={{ color: 'red' }}>Sales year must be between 2006 and 2021</p>
+                            <p style={{ color: 'red' }}>Sales year must be between 2007 and 2022</p>
                         )}
                         {minSalesYearErrorMessage && (
                             <p style={{ color: 'red' }}>{minSalesYearErrorMessage}</p>
@@ -408,7 +408,7 @@ export default function FormPage() {
                                onChange={handleMaxSaleYear}
                         />
                         {!maxSaleYearVerify && isTyping && !maxSalesYearErrorMessage && (
-                            <p style={{color: 'red'}}>Sales year must be between 2006 and 2021</p>
+                            <p style={{color: 'red'}}>Sales year must be between 2007 and 2022</p>
                         )}
                         {maxSalesYearErrorMessage && (
                             <p style={{ color: 'red' }}>{maxSalesYearErrorMessage}</p>

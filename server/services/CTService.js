@@ -117,16 +117,16 @@ const formulateWhereClause = async (formData) => {
 
     //filter by min and max sale price and sale ratio
     if(formData.minSalePrice !== ''){
-        where += `AND si.sales_amount > ${formData.minSalePrice} `;
+        where += `AND si.sales_amount >= ${formData.minSalePrice} `;
     }
     if(formData.maxSalePrice !== ''){
-        where += `AND si.sales_amount < ${formData.maxSalePrice} `;
+        where += `AND si.sales_amount <= ${formData.maxSalePrice} `;
     }
     if(formData.minSaleRatio !== ''){
-        where += `AND si.sales_ratio > ${formData.minSaleRatio} `;
+        where += `AND si.sales_ratio >= ${formData.minSaleRatio} `;
     }
     if(formData.maxSaleRatio !== ''){
-        where += `AND si.sales_ratio < ${formData.maxSaleRatio} `;
+        where += `AND si.sales_ratio <= ${formData.maxSaleRatio} `;
     }
     where += `\n`;
 
