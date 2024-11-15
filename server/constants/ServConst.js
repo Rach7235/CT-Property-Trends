@@ -1,119 +1,52 @@
-// This file stores constants (currently only strings containing query segments)
+// This file stores constants to be used in the back end.
 
-const dotenv = require('dotenv');
-dotenv.config({path:"./.env"});
+// API endpoint constants
+const Town = 'towns'
+const resType = 'residential-type'
+const queryRequest = 'submit-and-query'
+const Year = 'years'
 
-// Avg Sales Amount
-const asaSelectFrom =
-    `SELECT
-    TO_CHAR(si.sale_date, 'YYYY') AS sale_year,
-    a.town,
-    TO_CHAR(ROUND(AVG(si.sales_amount), 2), '999999999.99') AS avg_assessed_value
-    
-FROM "M.ENGERT".Sales_Info si
-JOIN "M.ENGERT".Address a ON si.address_id = a.id
-JOIN "M.ENGERT".Residential_Type rt ON si.residential_type_id = rt.id
-`;
+//Table name constants
+const addressTable = '"M.ENGERT".Address'
+const resTypeTable = '"M.ENGERT".Residential_Type'
+const salesInfoTable = '"M.ENGERT".Sales_Info'
 
-const asaGroupOrder =
-    `GROUP BY
-    TO_CHAR(si.sale_date, 'YYYY'),
-    a.town
-ORDER BY
-    sale_year,
-    a.town`;
+//Address Table attribute constants
+const aId = 'id'
+const town = 'town'
+const addrLines = 'address_lines'
 
-// Total Sales Volume
-const tsvSelectFrom =
-    `SELECT
-    TO_CHAR(si.sale_date, 'YYYY') AS sale_year,
-    a.town,
-    rt.type_name AS residential_type,
-    COUNT(si.serial_number) AS total_sales_vol
-    
-FROM "M.ENGERT".Sales_Info si
-JOIN "M.ENGERT".Address a ON si.address_id = a.id
-JOIN "M.ENGERT".residential_type rt ON si.residential_type_id = rt.id
-`;
+// Residential Table attribute constants
+const rId = 'id'
+const resTypeName = 'type_name'
 
-const tsvGroupOrder =
-    `GROUP BY
-    TO_CHAR(si.sale_date, 'YYYY'),
-    a.town,
-    rt.type_name
-ORDER BY
-    sale_year,
-    a.town,
-    rt.type_name`;
-
-// Avg Sales Ratio
-const asrSelectFrom =
-    `SELECT
-    TO_CHAR(si.sale_date, 'YYYY') AS sale_year,
-    a.town,
-    ROUND(AVG(si.sales_ratio), 4) AS avg_sales_ratio
-    
-FROM "M.ENGERT".Sales_Info si
-JOIN "M.ENGERT".Address a ON si.address_id = a.id
-JOIN "M.ENGERT".residential_type rt ON si.residential_type_id = rt.id
-`;
-
-const asrGroupOrder =
-    `GROUP BY
-    TO_CHAR(si.sale_date, 'YYYY'),
-    a.town
-ORDER BY
-    sale_year,
-    a.town`;
-
-//Avg Assessed Value
-const aavSelectFrom =
-    `SELECT
-    TO_CHAR(si.sale_date, 'YYYY') AS sale_year,
-    a.town,
-    TO_CHAR(ROUND(AVG(si.assessed_value), 2), '999999999.99') AS avg_assessed_value
-    
-FROM "M.ENGERT".Sales_Info si
-JOIN "M.ENGERT".Address a ON si.address_id = a.id
-JOIN "M.ENGERT".residential_type rt ON si.residential_type_id = rt.id
-`;
-
-const aavGroupOrder =
-    `GROUP BY
-    TO_CHAR(si.sale_date, 'YYYY'),
-    a.town
-ORDER BY
-    sale_year,
-    a.town`;
-
-// Total Sales Volume mnth
-const tsvmSelectFrom =
-    `SELECT
-    TO_CHAR(si.sale_date, 'MM') AS sale_month,
-    a.town,
-    COUNT(si.serial_number) AS total_sales_vol
-    
-FROM "M.ENGERT".Sales_Info si
-JOIN "M.ENGERT".Address a ON si.address_id = a.id
-JOIN "M.ENGERT".residential_type rt ON si.residential_type_id = rt.id
-`;
-
-const tsvmGroupOrder =
-    `GROUP BY
-    TO_CHAR(si.sale_date, 'MM'),
-    a.town
-ORDER BY
-    sale_month`;
+// Sales Info Table attribute constants
+const serialNum = 'serial_number'
+const saleDate = 'sale_date'
+const saleAmount = 'sales_amount'
+const assessedVal = 'assessed_value'
+const saleRatio = 'sales_ratio'
+const addrId = 'address_id'
+const resTypeId = 'residential_type_id'
 
 module.exports = {
-    asaSelectFrom,
-    asaGroupOrder,
-    tsvSelectFrom,
-    tsvGroupOrder,
-    asrSelectFrom,
-    asrGroupOrder,
-    aavSelectFrom,
-    aavGroupOrder,
-    tsvmSelectFrom,
-    tsvmGroupOrder
+    Town,
+    resType,
+    queryRequest,
+    Year,
+    addressTable,
+    resTypeTable,
+    salesInfoTable,
+    aId,
+    town,
+    addrLines,
+    rId,
+    resTypeName,
+    serialNum,
+    saleDate,
+    saleAmount,
+    assessedVal,
+    saleRatio,
+    addrId,
+    resTypeId
 };
