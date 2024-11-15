@@ -1,11 +1,12 @@
 //This file handles querying the database and all related helper functions
 
 // Importing constants
+const SqlConst = require('../constants/SqlConst');
 const ServConst = require('../constants/ServConst');
 
 const getTowns = async (connection) => {
 
-    const result = await connection.execute('SELECT distinct Town FROM "M.ENGERT".Address')
+    const result = await connection.execute(`SELECT distinct ${ServConst.town} FROM ${ServConst.addressTable}`)
     // label, value is the format of the multiselect component
     // will be an array instead of a single value since user can select multiple things
     const towns = result.rows.map(row => ({ label: row[0], value: row[0] }));
@@ -15,7 +16,7 @@ const getTowns = async (connection) => {
 
 const getResidentialTypes = async (connection) => {
 
-    const result = await connection.execute('SELECT Type_Name FROM "M.ENGERT".Residential_Type')
+    const result = await connection.execute(`SELECT ${ServConst.resTypeName} FROM ${ServConst.resTypeTable}`)
     // label, value is the format of the multiselect component
     // will be an array instead of a single value since user can select multiple things
     const residentialTypes = result.rows.map(row => ({ label: row[0], value: row[0] }));
@@ -24,11 +25,11 @@ const getResidentialTypes = async (connection) => {
 };
 
 const getYearRange = async(connection) => {
-    const result = await connection.execute('SELECT MIN(extract(YEAR from sale_date)) AS minimumYear, MAX(extract(YEAR from sale_date))AS maximumYear FROM "M.ENGERT".SALES_INFO')
+    const result = await connection.execute(`SELECT MIN(extract(YEAR from ${ServConst.saleDate})) AS minYear, MAX(extract(YEAR from ${ServConst.saleDate}))AS maxYear FROM ${ServConst.salesInfoTable}`)
 
-    const [minimumYear, maximumYear] = result.rows[0];
+    const [minYear, maxYear] = result.rows[0];
 
-    return {minimumYear, maximumYear};
+    return {minYear, maxYear};
 }
 
 // returns the results of the query specified by the user through the formData
@@ -62,32 +63,32 @@ const formulateQuery = async (formData) => {
     let where = await formulateWhereClause(formData);
     let query;
 
-    // depending on the selected query, append relevant Select, From, Group, and Order clauses from ServConst.js
+    // depending on the selected query, append relevant Select, From, Group, and Order clauses from SqlConst.js
     switch (formData.trendQuery) {
         case 'Avg Sales Amount':
-            query = ServConst.asaSelectFrom;
+            query = SqlConst.asaSelectFrom;
             query += where;
-            query += ServConst.asaGroupOrder;
+            query += SqlConst.asaGroupOrder;
             break;
         case 'Total Sales Volume':
-            query = ServConst.tsvSelectFrom;
+            query = SqlConst.tsvSelectFrom;
             query += where;
-            query += ServConst.tsvGroupOrder;
+            query += SqlConst.tsvGroupOrder;
             break;
         case 'Avg Sales Ratio':
-            query = ServConst.asrSelectFrom;
+            query = SqlConst.asrSelectFrom;
             query += where;
-            query += ServConst.asrGroupOrder;
+            query += SqlConst.asrGroupOrder;
             break;
         case 'Avg Assessed Value':
-            query = ServConst.aavSelectFrom;
+            query = SqlConst.aavSelectFrom;
             query += where;
-            query += ServConst.aavGroupOrder;
+            query += SqlConst.aavGroupOrder;
             break;
         case 'Total Sales Volume mnth':
-            query = ServConst.tsvmSelectFrom;
+            query = SqlConst.tsvmSelectFrom;
             query += where;
-            query += ServConst.tsvmGroupOrder;
+            query += SqlConst.tsvmGroupOrder;
             break;
         default:
             // default should be impossible to reach but is present just in case
@@ -105,28 +106,28 @@ const formulateWhereClause = async (formData) => {
     const residentialTypeValues = formData.selectedResidentialType.map(rt => rt.value);
 
     //filter by town
-    let where = `WHERE a.town IN ('`;
+    let where = `WHERE a.${ServConst.town} IN ('`;
     let towns = townValues.join("', '");
     where += towns;
 
     //filter by residential type
-    where += `') \nAND rt.type_name IN ('`;
+    where += `') \nAND rt.${ServConst.resTypeName} IN ('`;
     let rtypes = residentialTypeValues.join(`', '`);
     where += rtypes;
     where += `') \n`;
 
     //filter by min and max sale price and sale ratio
     if(formData.minSalePrice !== ''){
-        where += `AND si.sales_amount > ${formData.minSalePrice} `;
+        where += `AND si.${ServConst.saleAmount} > ${formData.minSalePrice} `;
     }
     if(formData.maxSalePrice !== ''){
-        where += `AND si.sales_amount < ${formData.maxSalePrice} `;
+        where += `AND si.${ServConst.saleAmount} < ${formData.maxSalePrice} `;
     }
     if(formData.minSaleRatio !== ''){
-        where += `AND si.sales_ratio > ${formData.minSaleRatio} `;
+        where += `AND si.${ServConst.saleRatio} > ${formData.minSaleRatio} `;
     }
     if(formData.maxSaleRatio !== ''){
-        where += `AND si.sales_ratio < ${formData.maxSaleRatio} `;
+        where += `AND si.${ServConst.saleRatio} < ${formData.maxSaleRatio} `;
     }
     where += `\n`;
 

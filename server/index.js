@@ -2,6 +2,7 @@
 
 const express = require('express');
 const CTService = require('./services/CTService'); // Import services
+const ServConst = require('./constants/ServConst'); // Import constants
 const cors = require('cors');
 const db = require("./db"); // Import db
 const app = express();
@@ -17,7 +18,7 @@ app.listen(process.env.PORT, async () => {
 })
 
 // API to fetch town names for selection
-app.get('/towns', async (req, res) => {
+app.get(`/${ServConst.Town}`, async (req, res) => {
     try {
         const towns = await CTService.getTowns(connection);
         res.json(towns);
@@ -29,7 +30,7 @@ app.get('/towns', async (req, res) => {
 
 
 // API to fetch residential type names for selection
-app.get('/residential-type', async (req, res) => {
+app.get(`/${ServConst.resType}`, async (req, res) => {
     try {
         const residentialTypes = await CTService.getResidentialTypes(connection);
         res.json(residentialTypes);
@@ -40,7 +41,7 @@ app.get('/residential-type', async (req, res) => {
 });
 
 // API to fetch sale year range for slider
-app.get('/years', async (req, res) => {
+app.get(`/${ServConst.Year}`, async (req, res) => {
     try {
         const years = await CTService.getYearRange(connection);
         res.json(years);
@@ -51,7 +52,7 @@ app.get('/years', async (req, res) => {
 });
 
 // API to submit user fields and generate query
-app.post('/submit-and-query', async (req, res) => {
+app.post(`/${ServConst.queryRequest}`, async (req, res) => {
     try {
         // Extract form data from request body
         const formData = req.body;
