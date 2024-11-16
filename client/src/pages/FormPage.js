@@ -3,6 +3,7 @@ import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from 
 import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
+import Map from '../components/Map';
 
 
 
@@ -315,6 +316,9 @@ export default function FormPage() {
 
         return (
             <div style={{padding: '20px'}}>
+                <div className='container'>
+                    <Map/>
+                </div>
                 <div style={{marginBottom: '20px'}}>
                     <label htmlFor="year-slider">Year: {year}</label>
                     <br/>
