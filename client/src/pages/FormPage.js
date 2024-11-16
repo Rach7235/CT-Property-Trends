@@ -3,6 +3,7 @@ import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from 
 import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
+import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
 
 
 
@@ -45,6 +46,20 @@ export default function FormPage() {
 
     const [trendQuery, setTrendQuery] = useState("Avg Sales Amount");
     const [trendQueryVerify, setTrendQueryVerify] = useState(true);
+
+    // If true, show the map. If false, show the  graph
+    const [showMap, setShowMap] = useState(true);
+
+    // Function to show the map
+    const handleShowMap = () => {
+        setShowMap(true);
+    };
+
+    // Function to show the graph
+    const handleShowGraph = () => {
+        setShowMap(false);
+    };
+
 
     // Below are the functions to capture the different user fields
     // event.target.value will constantly update the state value whenever a change occurs in the field
@@ -313,60 +328,117 @@ export default function FormPage() {
             }
          }
 
+    // Center coordinates for Connecticut
+    const ctCenter = [41.6, -72.7];
+
+        // true means show map, false means show graph
         return (
             <div style={{padding: '20px'}}>
-                <div style={{marginBottom: '20px'}}>
+                {showMap ? (
+                <div style={{height: '400px', marginBottom: '20px', border: '1px solid #ddd'}}>
+                    <MapContainer
+                        center={ctCenter}
+                        zoom={8}
+                        style={{
+                            width: '100%',
+                            height: '100%'
+                        }}
+                    >
+                        <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        />
+                        <Marker position={ctCenter}>
+                            <Popup>
+                                Connecticut, USA
+                            </Popup>
+                        </Marker>
+                    </MapContainer>
+                </div>
+                    ):(
+                    <p>Graph goes here</p>)}
+                <div style={{marginTop: '20px', display: 'flex', gap: '10px'}}>
+                    <button
+                        type="button"
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#0047AB',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px'
+                        }}
+                        onClick={handleShowMap}
+                    >
+                        Map
+                    </button>
+                    <button
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#0047AB',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px'
+                        }}
+                        onClick={handleShowGraph}
+                    >
+                        Graph
+                    </button>
+                </div>
+
+                <div style={{marginTop:'20px', marginBottom: '20px'}}>
                     <label htmlFor="year-slider">Year: {year}</label>
                     <br/>
                     <input
                         type="range"
                         id="year-slider"
                         // Minimum sales year was 2007 in dataset
-                        max={yearRange.maximumYear}
+                        max={yearRange.maxYear}
                         // Maximum sales year was 2022 in dataset
-                        min={yearRange.minimumYear}
+                        min={yearRange.minYear}
                         value={year}
                         // Year increments 1 at a time on the slider
                         step="1"
                         onChange={handleYear}
                         style={{
-                            width: '300px',
+                            width: '600px',
                             height: '20px',
                         }}
                     />
                 </div>
 
                 <div style={{display: 'flex', gap: '20px', marginBottom: '20px'}}>
+
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-                        <label htmlFor="input1">Sales Price Minimum</label>
-                        <input id="input1"
+                        <label htmlFor="input3">Sales Year Minimum</label>
+                        <input id="input2"
                                type="text"
-                               value={minSalePrice}
-                               placeholder="minimum"
+                               value={minSaleYear}
+                               placeholder="from"
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
-                               onChange={handleMinSalePrice}
+                               onChange={handleMinSaleYear}
                         />
-                        {!minSalePriceVerify && isTyping && !minSalePriceErrorMessage && (
-                            <p style={{ color: 'red' }}>Please enter a valid non-negative number.</p>
+                        {!minSaleYearVerify && isTyping && !minSalesYearErrorMessage && (
+                            <p style={{color: 'red'}}>Sales year must be between 2007 and 2022</p>
                         )}
-                         {minSalePriceErrorMessage && (
-                            <p style={{ color: 'red' }}>{minSalePriceErrorMessage}</p>
-                         )}
+                        {minSalesYearErrorMessage && (
+                            <p style={{color: 'red'}}>{minSalesYearErrorMessage}</p>
+                        )}
+
                     </div>
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-                        <label htmlFor="input3">Sales Price Maximum</label>
+                        <label htmlFor="input2">Sales Year Maximum</label>
                         <input type="text"
-                               value={maxSalePrice}
-                               placeholder="maximum"
+                               value={maxSaleYear}
+                               placeholder="to"
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
-                               onChange={handleMaxSalePrice}
+                               onChange={handleMaxSaleYear}
                         />
-                        {!maxSalePriceVerify && isTyping && !maxSalePriceErrorMessage && (
-                            <p style={{color: 'red'}}>Please enter a valid non-negative number.</p>
+                        {!maxSaleYearVerify && isTyping && !maxSalesYearErrorMessage && (
+                            <p style={{color: 'red'}}>Sales year must be between 2007 and 2022</p>
                         )}
-                        {maxSalePriceErrorMessage  && (
-                            <p style={{ color: 'red' }}>{maxSalePriceErrorMessage}</p>
+                        {maxSalesYearErrorMessage && (
+                            <p style={{color: 'red'}}>{maxSalesYearErrorMessage}</p>
                         )}
                     </div>
 
@@ -383,35 +455,35 @@ export default function FormPage() {
 
                 <div style={{display: 'flex', gap: '20px', marginBottom: '20px'}}>
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-                        <label htmlFor="input3">Sales Year Minimum</label>
-                        <input id="input2"
+                        <label htmlFor="input1">Sales Price Minimum</label>
+                        <input id="input1"
                                type="text"
-                               value={minSaleYear}
-                               placeholder="from"
+                               value={minSalePrice}
+                               placeholder="minimum"
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
-                               onChange={handleMinSaleYear}
+                               onChange={handleMinSalePrice}
                         />
-                        {!minSaleYearVerify && isTyping && !minSalesYearErrorMessage && (
-                            <p style={{ color: 'red' }}>Sales year must be between 2007 and 2022</p>
+                        {!minSalePriceVerify && isTyping && !minSalePriceErrorMessage && (
+                            <p style={{color: 'red'}}>Please enter a valid non-negative number.</p>
                         )}
-                        {minSalesYearErrorMessage && (
-                            <p style={{ color: 'red' }}>{minSalesYearErrorMessage}</p>
+                        {minSalePriceErrorMessage && (
+                            <p style={{color: 'red'}}>{minSalePriceErrorMessage}</p>
                         )}
                     </div>
 
                     <div style={{display: 'flex', flexDirection: 'column', flex: '1'}}>
-                        <label htmlFor="input2">Sales Year Maximum</label>
+                        <label htmlFor="input3">Sales Price Maximum</label>
                         <input type="text"
-                               value={maxSaleYear}
-                               placeholder="to"
+                               value={maxSalePrice}
+                               placeholder="maximum"
                                style={{padding: '8px', border: '1px solid #ccc', borderRadius: '4px'}}
-                               onChange={handleMaxSaleYear}
+                               onChange={handleMaxSalePrice}
                         />
-                        {!maxSaleYearVerify && isTyping && !maxSalesYearErrorMessage && (
-                            <p style={{color: 'red'}}>Sales year must be between 2007 and 2022</p>
+                        {!maxSalePriceVerify && isTyping && !maxSalePriceErrorMessage && (
+                            <p style={{color: 'red'}}>Please enter a valid non-negative number.</p>
                         )}
-                        {maxSalesYearErrorMessage && (
-                            <p style={{ color: 'red' }}>{maxSalesYearErrorMessage}</p>
+                        {maxSalePriceErrorMessage && (
+                            <p style={{color: 'red'}}>{maxSalePriceErrorMessage}</p>
                         )}
                     </div>
 
@@ -437,7 +509,8 @@ export default function FormPage() {
                                onChange={handleMinSaleRatio}
                         />
                         {!minSaleRatioVerify && isTyping && (
-                            <p style={{color: 'red'}}>Please enter a floating point number. Must have 1 digit before decimal and between 1-6 after</p>
+                            <p style={{color: 'red'}}>Please enter a floating point number. Must have 1 digit before
+                                decimal and between 1-6 after</p>
                         )}
                     </div>
 
@@ -496,6 +569,6 @@ export default function FormPage() {
                 </div>
             </div>
         );
-    }
+}
 
 
