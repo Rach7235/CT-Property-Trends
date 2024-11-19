@@ -90,15 +90,3 @@ const Map = ()=>{
     )
 }
 export default Map;
-
-
-// var Map = L.map('map').setView([41.599998, -72.699997], 9);
-
-// var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-//     maxZoom: 19,
-//     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-// }).addTo(Map);
-
-// L.geoJson(townData).addTo(Map);
-
-// export default Map;
