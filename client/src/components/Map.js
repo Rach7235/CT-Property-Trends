@@ -3,12 +3,27 @@ import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import {MapContainer, GeoJSON, TileLayer} from 'react-leaflet';
 import '../css/Map.css';
-import {features} from '../data/ct_towns.js';
+import features from '../data/ct_towns.json';
 
 
 const Map = ()=>{
+    const [onselect, setOnselect] = useState({});
+    const feature = features.features.map(feature=>{
+        return(feature);
+    });
+
+    const style = (feature => {
+        return ({
+            weight: 1,
+            opacity: 1,
+            color: 'black',
+            dashArray: '2',
+            fillOpacity: 0.5
+        });
+    });
+
     const mapStyle = {
-        height: '55vh',
+        height: '75vh',
         width: '85%',
         margin: '0 auto',
     }
@@ -30,11 +45,11 @@ const Map = ()=>{
                         attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
                     />
-                    {/* {features && (
+                    {features && (
                     <GeoJSON data={features} 
                     style={style} 
-                    onEachFeature={onEachFeature}/>
-                    )} */}
+                    /*onEachFeature={onEachFeature}*//>
+                    )}
                 </MapContainer>
                 </div>
             </div>
