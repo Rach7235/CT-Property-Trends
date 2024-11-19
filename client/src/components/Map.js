@@ -1,6 +1,5 @@
 import React,{useState} from 'react';
 import 'leaflet/dist/leaflet.css';
-import * as L from 'leaflet';
 import {MapContainer, GeoJSON, TileLayer} from 'react-leaflet';
 import '../css/Map.css';
 import features from '../data/ct_towns.json';
@@ -72,7 +71,7 @@ const Map = ()=>{
                     <MapContainer
                         center={[41.599998, -72.699997]}
                         zoom={9}
-                        scrollWheelZoom={true}
+                        scrollWheelZoom={false}
                         style={mapStyle}
                     >
                         <TileLayer

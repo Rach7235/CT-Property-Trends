@@ -20,9 +20,10 @@ cd ./CT-Property-Trends
 
 ## Frontend
 1. cd ./client
-2. npm install
+2. npm install --legacy-peer-deps
 3. npm start 
 - The frontend runs on localhost:3000 by default
+- --legacy-peer-deps is added to fix the upstream dependency conflict
 
 ## Backend
 1. cd ./server 
