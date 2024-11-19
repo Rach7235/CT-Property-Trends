@@ -4,6 +4,9 @@
 const SqlConst = require('../constants/SqlConst');
 const ServConst = require('../constants/ServConst');
 
+const ct_towns = require('../data/ct_towns.json');
+
+
 const getTowns = async (connection) => {
 
     const result = await connection.execute(`SELECT distinct ${ServConst.town} FROM ${ServConst.addressTable}`)
@@ -55,7 +58,66 @@ const getQueryResults = async (formData, connection) => {
         queryResults.push(newRow);
     }
 
-    return queryResults;
+    return updateCtTowns(formData, queryResults);
+};
+
+// Modifying ct_towns.json with query results for the front end
+const updateCtTowns = (formData, queryResults) => {
+
+    // Used for finding the correct column name in queryResults
+    const resultTypes = new Map([
+        ['Avg Sales Amount', 'AVG_SALES_AMOUNT'],
+        ['Total Sales Volume', 'TOTAL_SALES_VOL'],
+        ['Avg Sales Ratio', 'AVG_SALES_RATIO'],
+        ['Avg Assessed Value', 'AVG_ASSESSED_VAL'],
+        ['Total Sales Volume mnth', 'TOTAL_SALES_VOL']
+    ]);
+
+    // Using a deep copy of ct_towns to avoid values being carried over between queries
+    let ct_towns_local_copy = structuredClone(ct_towns);
+
+    // Creating a list of towns found in the queryResults
+    const townNames = queryResults.map(row => row.TOWN);
+    // Filtering out towns not included in queryResults
+    let relevantTowns = [];
+    relevantTowns = ct_towns_local_copy.features.filter(
+        feature => townNames.includes(feature.properties.TOWN_NAME)
+    );
+
+    let queryProperties = {};
+    queryResults.forEach(row => {
+        let date; // Sale month or year depending on the query selected
+        if (formData.trendQuery === 'Total Sales Volume mnth') date = row.SALE_MONTH;
+        else date = row.SALE_YEAR;
+        const townName = row.TOWN; // Town name
+
+        // Gets the result column name from the map based on the query selected
+        const resultType = resultTypes.get(formData.trendQuery);
+        let resultValue; // Trim the value if it is a certain query (TO_CHAR is used in the SQL query to enforce formatting)
+        if (formData.trendQuery === 'Avg Sales Amount' || formData.trendQuery === 'Total Sales Volume') resultValue = row[resultType].trim();
+        else resultValue = row[resultType];
+
+        // Initialize town in queryProperties if necessary
+        if (!queryProperties[townName]) {
+            queryProperties[townName] = { TOWN_NAME: townName };
+        }
+        // Add the result value to the queryProperty with the month or year as key depending on the query
+        queryProperties[townName][date] = resultValue;
+    });
+
+    // Add newly calculated queryProperties to the relevantTowns
+    const updatedTowns = relevantTowns.map(feature => {
+        if (queryProperties[feature.properties.TOWN_NAME]) {
+            feature.properties = {
+                // Using spread operator to combine existing properties with new properties
+                ...feature.properties, // Just in case there are important existing properties (which is not likely)
+                ...queryProperties[feature.properties.TOWN_NAME]
+            };
+        }
+        return feature
+    });
+
+    return updatedTowns;
 };
 
 // uses formData selected by the user to formulate the requested query
@@ -116,7 +178,7 @@ const formulateWhereClause = async (formData) => {
     where += rtypes;
     where += `') \n`;
 
-    //filter by min and max sale price and sale ratio
+    //filter by min and max sale price, sale ratio, and sale year
     if(formData.minSalePrice !== ''){
         where += `AND si.${ServConst.saleAmount} >= ${formData.minSalePrice} `;
     }
@@ -128,6 +190,12 @@ const formulateWhereClause = async (formData) => {
     }
     if(formData.maxSaleRatio !== ''){
         where += `AND si.${ServConst.saleRatio} <= ${formData.maxSaleRatio} `;
+    }
+    if(formData.minSaleYear !== ''){
+        where += `AND EXTRACT(YEAR FROM si.${ServConst.saleDate}) >= ${formData.minSaleYear} `;
+    }
+    if(formData.maxSaleYear !== ''){
+        where += `AND EXTRACT(YEAR FROM si.${ServConst.saleDate}) <= ${formData.maxSaleYear} `;
     }
     where += `\n`;
 

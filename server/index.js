@@ -59,10 +59,10 @@ app.post(`/${ServConst.queryRequest}`, async (req, res) => {
         // Log the received form data to view its structure and values
         console.log('Received form data:', req.body);
         // Create and execute query
-        const queryResults = await CTService.getQueryResults(formData, connection);
-        res.json(queryResults);
+        const updatedCtTowns = await CTService.getQueryResults(formData, connection);
+        res.json(updatedCtTowns);
 
-        console.log('QUERY RESULTS:', queryResults); //TEST CODE: Prints Query results to console. (To be removed later)
+        console.log('RESULTS:', updatedCtTowns); //TEST CODE: Prints results to console. (To be removed later)
     } catch (error) {
         console.error('Error retrieving query results:', error.message);
         res.status(500).send('Error retrieving query results');
