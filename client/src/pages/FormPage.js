@@ -4,13 +4,17 @@ import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
 import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
-
-
+import {XYPlot, VerticalBarSeries, Hint, XAxis, YAxis, HorizontalGridLines, VerticalGridLines} from 'react-vis';
+import 'react-vis/dist/style.css';
 
 export default function FormPage() {
     // States to hold user selected variables
     const [year, setYear] = useState(2007);
     const [yearRange, setYearRange] = useState({min: 2007, max: 2022});
+
+    // State to hold the range of years for the graph
+    const [yearTickRange, setYearTickRange] = useState({min: 2007, max: 2022});
+    const [yearTicks, setYearTicks] = useState(Array.from({ length: 2022 - 2007 + 1 }, (_, i) => 2007 + i));
 
     // Tracks if user has started typing so verification error messages hide until interaction
     const [isTyping, setIsTyping] = useState(false);
@@ -47,8 +51,19 @@ export default function FormPage() {
     const [trendQuery, setTrendQuery] = useState("Avg Sales Amount");
     const [trendQueryVerify, setTrendQueryVerify] = useState(true);
 
-    // If true, show the map. If false, show the  graph
+    // If true, show the map. If false, show the graph
     const [showMap, setShowMap] = useState(true);
+
+    // State to hold the data for the graph and the hovered data
+    const [chartData, setChartData] = useState([{x: 0, y: 0}]);
+    const [hoveredData, setHoveredData] = useState(null);
+    const handleMouseOver = (datapoint) => {
+        setHoveredData(datapoint);
+    };
+    const handleMouseOut = () => {
+        setHoveredData(null);
+    };
+
 
     // Function to show the map
     const handleShowMap = () => {
@@ -60,7 +75,6 @@ export default function FormPage() {
         setShowMap(false);
     };
 
-
     // Below are the functions to capture the different user fields
     // event.target.value will constantly update the state value whenever a change occurs in the field
 
@@ -68,7 +82,7 @@ export default function FormPage() {
     const handleYear = (event) => {
         const year = event.target.value;
         setYear(year);
-    }
+    };
 
     // Function to capture minimum sales price
     const handleMinSalePrice = (event) => {
@@ -228,7 +242,70 @@ export default function FormPage() {
             else {
                 setTrendQueryVerify(false);
             }
+            console.log('Trend Query:', trendQuery);
         };
+
+        // Function to handle year tick range
+        const handleTickRange = () => {
+            if (minSaleYear !== '' && maxSaleYear !== '') {
+                setYearTickRange({min: Number(minSaleYear), max: Number(maxSaleYear)});
+            }
+            if (minSaleYear === '' && maxSaleYear !== '') {
+                setYearTickRange({min: 2007, max: Number(maxSaleYear)});
+            }
+            if (minSaleYear !== '' && maxSaleYear === '') {
+                setYearTickRange({min: Number(minSaleYear), max: 2022});
+            }
+            if (minSaleYear === '' && maxSaleYear === '') {
+                setYearTickRange({min: 2007, max: 2022});
+            }
+        };
+
+        // Function to handle query results
+        const handleQueryResults = (queryResults) => {
+            setChartData([]);
+            let filteredData = queryResults.filter(result => {
+                return result['SALE_YEAR'] >= yearTicks[0] && result['SALE_YEAR'] <= yearTicks[yearTicks.length - 1];
+            });
+            let data = [];
+            // Format data based on trend query
+            switch (trendQuery) {
+                case 'Avg Sales Amount':
+                    data = filteredData.map((result) => ({
+                        x: result['SALE_YEAR'],
+                        y: parseFloat(result['AVG_SALES_AMOUNT']?.trim())
+                    }));
+                    break;
+                case 'Total Sales Volume':
+                    data = filteredData.map((result) => ({
+                        x: result['SALE_YEAR'],
+                        y: result['TOTAL_SALES_VOL']
+                    }));
+                    break;
+                case 'Avg Sales Ratio':
+                    data = filteredData.map((result) => ({
+                        x: result['SALE_YEAR'],
+                        y: parseFloat((result['AVG_SALES_RATIO']?.toString() || '').trim())
+                    }));
+                    break;
+                case 'Avg Assessed Value':
+                    data = filteredData.map((result) => ({
+                        x: result['SALE_YEAR'],
+                        y: parseFloat(result['AVG_ASSESSED_VAL']?.trim())
+                    }));
+                    break;
+                case 'Total Sales Volume mnth':
+                    filteredData = queryResults;
+                    data = filteredData.map((result) => ({
+                        x: result['SALE_MONTH'],
+                        y: result['TOTAL_SALES_VOL']
+                    }));
+                    break;
+                default:
+                    console.error('Unknown trend query:', trendQuery);
+            }
+            setChartData(data);
+        }
 
     // Function to clear the user input
     // Useful if user wants to make another query without refreshing/leaving the page or deleting all their input
@@ -244,6 +321,7 @@ export default function FormPage() {
         setSelectedResidentialType(residentialType);
         setTrendQuery("Avg Sales Amount");
         setIsTyping(false);
+        setYearTickRange({min: 2007, max: 2022});
         alert("Fields successfully cleared!")
     };
 
@@ -293,6 +371,19 @@ export default function FormPage() {
             getYearRange();
             }, []);
 
+        // Function to update year ticks when year range changes
+        useEffect(() => {
+            const yearTicksUpdated = Array.from(
+                { length: yearTickRange.max - yearTickRange.min + 1 }, (_, i) => yearTickRange.min + i);
+            setYearTicks(yearTicksUpdated);
+            console.log('Year Ticks:', yearTicksUpdated);
+        }, [yearTickRange]);
+
+        // Function to update year tick range when min/max sale year changes
+        useEffect (() => {
+            handleTickRange();
+        }, [minSaleYear, maxSaleYear]);
+
         // Function to submit user fields to backend
         const handleSubmit = async () => {
             // Ensure all fields are valid
@@ -316,8 +407,9 @@ export default function FormPage() {
                         selectedResidentialType,
                         trendQuery
                 });
-                // Ensure values are correct
+                // Ensure values are correct & update year tick range
                 console.log('Query Results:', queryResults);
+                handleQueryResults(queryResults);
                 alert('Form submission and query generation successful!');
                 } catch (error) {
                     console.error('Form submission and query error:', error);
@@ -325,6 +417,11 @@ export default function FormPage() {
                 }
             } else {
                 alert('Please ensure all fields are valid before submitting.');
+            }
+            if (minSaleYearVerify && maxSaleYearVerify) {
+                console.log('Submitting with:', { minSaleYear, maxSaleYear });
+            }else {
+                console.log('Validation failed:', { minSaleYearVerify, maxSaleYearVerify });
             }
          }
 
@@ -356,7 +453,37 @@ export default function FormPage() {
                     </MapContainer>
                 </div>
                     ):(
-                    <p>Graph goes here</p>)}
+                    <XYPlot
+                        width={1000}
+                        height={600}
+                        xType="ordinal"
+                        margin={{ left: 75, right: 75, top: 30, bottom: 30 }}>
+                        <HorizontalGridLines />
+                        <VerticalGridLines />
+                        <XAxis
+                            tickLabelAngle={45}
+                            tickPadding = {25}
+                        />
+                        <YAxis title={trendQuery}/>
+                        <VerticalBarSeries
+                            data={chartData}
+                            barGap={1}
+                            barWidth={0.6}
+                            color="#0047AB"
+                            onValueMouseOver={handleMouseOver}
+                            onValueMouseOut={handleMouseOut}
+                        />
+                        {hoveredData && (
+                            <Hint value={hoveredData}>
+                                <div style={{background: 'white', padding: '10px', border: '2px solid #ccc', color: 'black'}}>
+                                    <h4>{hoveredData.x}</h4>
+                                    <p>{hoveredData.y}</p>
+                                </div>
+                            </Hint>
+                        )}
+                    </XYPlot>
+                    )
+                }
                 <div style={{marginTop: '20px', display: 'flex', gap: '10px'}}>
                     <button
                         type="button"
