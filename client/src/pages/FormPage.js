@@ -6,6 +6,7 @@ import {MultiSelect} from 'react-multi-select-component';
 import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
 import {XYPlot, VerticalBarSeries, Hint, XAxis, YAxis, HorizontalGridLines, VerticalGridLines} from 'react-vis';
 import 'react-vis/dist/style.css';
+import Map from '../components/Map';
 
 export default function FormPage() {
     // States to hold user selected variables
@@ -432,26 +433,7 @@ export default function FormPage() {
         return (
             <div style={{padding: '20px'}}>
                 {showMap ? (
-                <div style={{height: '400px', marginBottom: '20px', border: '1px solid #ddd'}}>
-                    <MapContainer
-                        center={ctCenter}
-                        zoom={8}
-                        style={{
-                            width: '100%',
-                            height: '100%'
-                        }}
-                    >
-                        <TileLayer
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        />
-                        <Marker position={ctCenter}>
-                            <Popup>
-                                Connecticut, USA
-                            </Popup>
-                        </Marker>
-                    </MapContainer>
-                </div>
+                <Map/>
                     ):(
                     <XYPlot
                         width={1000}
