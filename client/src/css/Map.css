@@ -16,44 +16,48 @@
   padding-left:2%;
   font-family:tohoma;
 }
-.census-info {
+.town-info {
   display: flex;
   flex-direction: column;
   align-items: right;
-  top: 55px;
-  right: 150px;
+  top: 120px;
+  right: 15px;
   padding: 10px 10px;
-  border-radius: 5px;
-  color: white;
+  border-radius: 10%;
+  color: black;
   letter-spacing:2px;
-  background: rgba(0,0,0,0.8);
   margin-top: 150px;
   list-style: none;
-  width: 16%;
+  width: 12%;
   height: 20%;
-  font-size:12px;
+  font-size:18px;
   position: absolute;
   z-index: 999;
-  box-shadow: 0 0 5px 0 rgba(184, 140, 140, 0.3);
+  background: white;
+  border: 6px solid #0047AB;
 }
-.census-info-hover{
+
+
+.town-info-hover {
   z-index: 999;
-  top: 55px;
-  right: 150px;
+  top: 120px;
+  right: 15px;
   height: 20%;
-  width:16%;
+  width: 12%;
   padding: 10px 10px;
-  border-radius: 5px;
-  color: white;
+  border-radius: 10%;
   position: absolute;
-  letter-spacing:2px;
-  margin-top:150px;
-  font-size: 14px;
-  box-shadow:  0 0 5px 0 rgba(184, 140, 140, 0.3);
-  background: rgba(0,0,0,0.8);
+  letter-spacing: 2px;
+  margin-top: 150px;
+  font-size: 16px;
+  background: white;
+  color: black;
+  background: rgba(0, 0, 0, 0.8);
 }
+
+
 @media (max-width: 768px) {
-  .census-info {
+  .town-info {
   align-items: right;
   top: 120px;
   right: 38px;
@@ -63,7 +67,7 @@
   font-size:8px;
  
 }
-.census-info-hover{
+.town-info-hover{
   z-index: 999;
   top: 120px;
   right: 38px;

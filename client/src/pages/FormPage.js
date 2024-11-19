@@ -13,6 +13,13 @@ export default function FormPage() {
     const [year, setYear] = useState(2007);
     const [yearRange, setYearRange] = useState({min: 2007, max: 2022});
 
+    // January by default
+    const [month, setMonth] = useState("Jan");
+    const [isMonthSlider, setIsMonthSlider] = useState(false);
+
+    // Array of month names
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     // State to hold the range of years for the graph
     const [yearTickRange, setYearTickRange] = useState({min: 2007, max: 2022});
     const [yearTicks, setYearTicks] = useState(Array.from({ length: 2022 - 2007 + 1 }, (_, i) => 2007 + i));
@@ -58,6 +65,8 @@ export default function FormPage() {
     // State to hold the data for the graph and the hovered data
     const [chartData, setChartData] = useState([{x: 0, y: 0}]);
     const [hoveredData, setHoveredData] = useState(null);
+
+
     const handleMouseOver = (datapoint) => {
         setHoveredData(datapoint);
     };
@@ -84,6 +93,13 @@ export default function FormPage() {
         const year = event.target.value;
         setYear(year);
     };
+
+    // Function to capture month from slider
+    const handleMonth = (event) => {
+        // Array index is 0-based, whilst slider is 1-based so adjust value
+        const month = months[event.target.value - 1];
+        setMonth(month);
+    }
 
     // Function to capture minimum sales price
     const handleMinSalePrice = (event) => {
@@ -243,6 +259,14 @@ export default function FormPage() {
             else {
                 setTrendQueryVerify(false);
             }
+            // Switch slider to monthly if trend query is monthly
+            if (trendQuery === 'Total Sales Volume mnth') {
+                setIsMonthSlider(true);
+            }
+            else {
+                // Query is not monthly, so slider will be yearly
+                setIsMonthSlider(false);
+            }
             console.log('Trend Query:', trendQuery);
         };
 
@@ -312,6 +336,7 @@ export default function FormPage() {
     // Useful if user wants to make another query without refreshing/leaving the page or deleting all their input
     const clearInput = () => {
         setYear('');
+        setMonth('');
         setMinSalePrice('');
         setMaxSalePrice('');
         setMinSaleRatio('');
@@ -398,6 +423,7 @@ export default function FormPage() {
                     try {
                         const queryResults = await submitFormAndQuery ({
                         year,
+                        month,
                         minSalePrice,
                         maxSalePrice,
                         minSaleRatio,
@@ -426,10 +452,7 @@ export default function FormPage() {
             }
          }
 
-    // Center coordinates for Connecticut
-    const ctCenter = [41.6, -72.7];
 
-        // true means show map, false means show graph
         return (
             <div style={{padding: '20px'}}>
                 {showMap ? (
@@ -495,19 +518,23 @@ export default function FormPage() {
                 </div>
 
                 <div style={{marginTop:'20px', marginBottom: '20px'}}>
-                    <label htmlFor="year-slider">Year: {year}</label>
+                    <label htmlFor="slider">
+                        {isMonthSlider ? `Month: ${month}` : `Year: ${year}`}</label>
                     <br/>
                     <input
                         type="range"
-                        id="year-slider"
-                        // Minimum sales year was 2007 in dataset
-                        max={yearRange.maxYear}
+                        id="slider"
+                        // January is minimum month
+                        min={isMonthSlider ? 1 : yearRange.minYear}
                         // Maximum sales year was 2022 in dataset
-                        min={yearRange.minYear}
-                        value={year}
-                        // Year increments 1 at a time on the slider
+                        // December is maximum month
+                        max={isMonthSlider ? 12 : yearRange.maxYear}
+                        // indexOf gives 0-based index. Add 1 to get 1-based to match slider
+                        // ex. "Jan" = 0 and "Feb" = 1
+                        value={isMonthSlider ? months.indexOf(month) + 1  : year }
                         step="1"
-                        onChange={handleYear}
+                        // If true, set value to month. If not, set value to year
+                        onChange={isMonthSlider ? handleMonth : handleYear}
                         style={{
                             width: '600px',
                             height: '20px',
