@@ -117,7 +117,9 @@ const updateCtTowns = (formData, queryResults) => {
         return feature
     });
 
-    return updatedTowns;
+    // Creating geoJson with updatedTowns as "features"
+    const geoJson = {type: "FeatureCollection", crs: {type: "name", properties: {name: "EPSG:4326"}}, features: updatedTowns};
+    return geoJson; // Return the full GeoJSON object
 };
 
 // uses formData selected by the user to formulate the requested query
