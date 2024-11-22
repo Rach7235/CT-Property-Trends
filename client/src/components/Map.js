@@ -7,13 +7,14 @@ import '../css/Map.css';
 // Also pass the selected year and month from slider as props
 const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=> {
     const [onselect, setOnselect] = useState({});
-    const [filteredResults, setFilteredResults] = useState([]);
+    // const [filteredResults, setFilteredResults] = useState([]);
 
     const yearRef = useRef(selectedYear);
     const monthRef = useRef(selectedMonth);
     const sliderRef = useRef(isMonthSlider);
     const queryResultsRef = useRef(queryResults);
 
+    //To update the values that are "captured" in the function
     useEffect(() => {
         yearRef.current = selectedYear;
         monthRef.current = selectedMonth;
@@ -26,7 +27,7 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
     useEffect(() => {
         if (clear) {
             setOnselect({});
-            setFilteredResults([]);
+            // setFilteredResults([]);
         }
     }, [clear]);
 
@@ -79,8 +80,6 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
         const TOWN_NAME = properties.TOWN_NAME;
         const YearOrMonthString = sliderRef.current ? monthRef.current.toString() : yearRef.current.toString();
         
-        console.log(`properties[YearOrMonthString] = ${properties[YearOrMonthString]}`)
-
         if (properties[YearOrMonthString] !== undefined) {
             // Set only the selected town's name and value for the selected year
             
@@ -163,6 +162,7 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
                         />
                         {queryResults && queryResults.length > 0 ? (
                             <GeoJSON
+                                key={JSON.stringify(queryResults)}
                                 data={queryResults}
                                 style={style}
                                 onEachFeature={onEachFeature}
