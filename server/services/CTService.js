@@ -69,7 +69,7 @@ const updateCtTowns = (formData, queryResults) => {
         ['Avg Sales Amount', 'AVG_SALES_AMOUNT'],
         ['Total Sales Volume', 'TOTAL_SALES_VOL'],
         ['Avg Sales Ratio', 'AVG_SALES_RATIO'],
-        ['Avg Assessed Value', 'AVG_ASSESSED_VAL'],
+        ['Avg Assessed Value', 'AVG_ASSESSED_VALUE'],
         ['Total Sales Volume mnth', 'TOTAL_SALES_VOL']
     ]);
 
@@ -94,7 +94,7 @@ const updateCtTowns = (formData, queryResults) => {
         // Gets the result column name from the map based on the query selected
         const resultType = resultTypes.get(formData.trendQuery);
         let resultValue; // Trim the value if it is a certain query (TO_CHAR is used in the SQL query to enforce formatting)
-        if (formData.trendQuery === 'Avg Sales Amount' || formData.trendQuery === 'Total Sales Volume') resultValue = row[resultType].trim();
+        if (formData.trendQuery === 'Avg Sales Amount' || formData.trendQuery === 'Avg Assessed Value') resultValue = row[resultType].trim();
         else resultValue = row[resultType];
 
         // Initialize town in queryProperties if necessary
