@@ -90,7 +90,7 @@ ORDER BY
 // Total Sales Volume mnth
 const tsvmSelectFrom =
     `SELECT
-    TO_CHAR(si.${ServConst.saleDate}, 'MM') AS sale_month,
+    TO_CHAR(si.${ServConst.saleDate}, 'fmMM') AS sale_month,
     a.${ServConst.town},
     COUNT(si.${ServConst.serialNum}) AS total_sales_vol
     
@@ -101,7 +101,7 @@ JOIN ${ServConst.resTypeTable} rt ON si.${ServConst.resTypeId} = rt.${ServConst.
 
 const tsvmGroupOrder =
     `GROUP BY
-    TO_CHAR(si.${ServConst.saleDate}, 'MM'),
+    TO_CHAR(si.${ServConst.saleDate}, 'fmMM'),
     a.${ServConst.town}
 ORDER BY
     sale_month`;

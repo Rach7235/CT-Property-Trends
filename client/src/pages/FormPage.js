@@ -330,7 +330,6 @@ export default function FormPage() {
                 }));
                 break;
             case 'Total Sales Volume mnth':
-                filteredData = queryResults;
                 data = filteredData.map((result) => ({
                     x: result['SALE_MONTH'],
                     y: result['TOTAL_SALES_VOL']

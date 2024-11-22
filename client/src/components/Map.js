@@ -12,12 +12,14 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
     const yearRef = useRef(selectedYear);
     const monthRef = useRef(selectedMonth);
     const sliderRef = useRef(isMonthSlider);
+    const queryResultsRef = useRef(queryResults);
 
     useEffect(() => {
         yearRef.current = selectedYear;
         monthRef.current = selectedMonth;
         sliderRef.current = isMonthSlider;
-    }, [selectedYear, selectedMonth, isMonthSlider]);
+        queryResultsRef.current = queryResults;
+    }, [selectedYear, selectedMonth, isMonthSlider, queryResults]);
 
     // Reset map state when queryResults is cleared
     // Otherwise, old map incorrectly persists even if user makes another query
@@ -76,8 +78,9 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
         const properties = e.target.feature.properties;
         const TOWN_NAME = properties.TOWN_NAME;
         const YearOrMonthString = sliderRef.current ? monthRef.current.toString() : yearRef.current.toString();
+        
+        console.log(`properties[YearOrMonthString] = ${properties[YearOrMonthString]}`)
 
-        console.log(`YearOrMonthString: ${YearOrMonthString}`)
         if (properties[YearOrMonthString] !== undefined) {
             // Set only the selected town's name and value for the selected year
             
