@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useRef} from 'react';
 import 'leaflet/dist/leaflet.css';
 import {MapContainer, GeoJSON, TileLayer} from 'react-leaflet';
 import '../css/Map.css';
@@ -8,6 +8,16 @@ import '../css/Map.css';
 const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=> {
     const [onselect, setOnselect] = useState({});
     const [filteredResults, setFilteredResults] = useState([]);
+
+    const yearRef = useRef(selectedYear);
+    const monthRef = useRef(selectedMonth);
+    const sliderRef = useRef(isMonthSlider);
+
+    useEffect(() => {
+        yearRef.current = selectedYear;
+        monthRef.current = selectedMonth;
+        sliderRef.current = isMonthSlider;
+    }, [selectedYear, selectedMonth, isMonthSlider]);
 
     // Reset map state when queryResults is cleared
     // Otherwise, old map incorrectly persists even if user makes another query
@@ -22,42 +32,42 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
    // console.log('Query Results in Map:', queryResults);
 
 
-    // Necessary so that only the year selected on slider is the results that are on the map
-    useEffect(() => {
-        console.log(isMonthSlider ? `Month ${selectedMonth}` : `Year ${selectedYear}`);
-        if (queryResults && selectedYear || selectedMonth) {
-            // Convert to string for comparison because year and month is a number in frontend and in geoJson properties is a string
-            const YearOrMonthString = isMonthSlider ? (selectedMonth.toString().padStart(2, '0')) : selectedYear.toString();
-            const monthString = selectedMonth.toString().padStart(2, '0')
-            if (isMonthSlider) {
-                console.log("Selected Month as String:", monthString);
-            }
+    // // Necessary so that only the year selected on slider is the results that are on the map
+    // useEffect(() => {
+    //     console.log(isMonthSlider ? `Month ${selectedMonth}` : `Year ${selectedYear}`);
+    //     if (queryResults && selectedYear || selectedMonth) {
+    //         // Convert to string for comparison because year and month is a number in frontend and in geoJson properties is a string
+    //         const YearOrMonthString = isMonthSlider ? (selectedMonth.toString().padStart(2, '0')) : selectedYear.toString();
+    //         const monthString = selectedMonth.toString().padStart(2, '0')
+    //         if (isMonthSlider) {
+    //             console.log("Selected Month as String:", monthString);
+    //         }
 
-            // Filter properties list to just the selected year or month and value for display in the map
-            const filtered = queryResults.map((feature) => {
-                const {TOWN_NAME} = feature.properties;
+    //         // Filter properties list to just the selected year or month and value for display in the map
+    //         const filtered = queryResults.map((feature) => {
+    //             const {TOWN_NAME} = feature.properties;
 
-                if (feature.properties[YearOrMonthString] !== undefined) {
-                    // Return the updated feature with the modified properties
-                    return {
-                        ...feature,
-                        properties: {
-                            TOWN_NAME,
-                            [YearOrMonthString]: feature.properties[YearOrMonthString]
-                        }
-                    };
-                }
-                // Exclude towns without data for the selected year or month
-                return null;
-            }).filter((feature) => feature !== null)
+    //             if (feature.properties[YearOrMonthString] !== undefined) {
+    //                 // Return the updated feature with the modified properties
+    //                 return {
+    //                     ...feature,
+    //                     properties: {
+    //                         TOWN_NAME,
+    //                         [YearOrMonthString]: feature.properties[YearOrMonthString]
+    //                     }
+    //                 };
+    //             }
+    //             // Exclude towns without data for the selected year or month
+    //             return null;
+    //         }).filter((feature) => feature !== null)
 
-            setFilteredResults(filtered);
-            // Logging to ensure that filtered results only has the year or month selected and not all years/months from properties
-            console.log('Filtered Results:', filtered);
-        }
-        // Re-run when queryResults, selectedYear, selectedMonth, or isMonthSlider changes
-        // Used to dynamically change map rendering dependent on year or month slider
-    }, [queryResults, selectedYear, selectedMonth, isMonthSlider]);
+    //         setFilteredResults(filtered);
+    //         // Logging to ensure that filtered results only has the year or month selected and not all years/months from properties
+    //         console.log('Filtered Results:', filtered);
+    //     }
+    //     // Re-run when queryResults, selectedYear, selectedMonth, or isMonthSlider changes
+    //     // Used to dynamically change map rendering dependent on year or month slider
+    // }, [queryResults, selectedYear, selectedMonth, isMonthSlider]);
 
 
     // Highlight map piece (feature) when hovered over
@@ -65,10 +75,12 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
         var layer = e.target;
         const properties = e.target.feature.properties;
         const TOWN_NAME = properties.TOWN_NAME;
-        const YearOrMonthString = isMonthSlider ? selectedMonth.toString() : selectedYear.toString();
+        const YearOrMonthString = sliderRef.current ? monthRef.current.toString() : yearRef.current.toString();
 
+        console.log(`YearOrMonthString: ${YearOrMonthString}`)
         if (properties[YearOrMonthString] !== undefined) {
             // Set only the selected town's name and value for the selected year
+            
             setOnselect({
                 TOWN_NAME: TOWN_NAME,
                 [YearOrMonthString]: properties[YearOrMonthString]
@@ -146,9 +158,9 @@ const Map = ({queryResults, selectedYear, selectedMonth, isMonthSlider, clear})=
                             attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                             url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
                         />
-                        {filteredResults && filteredResults.length > 0 ? (
+                        {queryResults && queryResults.length > 0 ? (
                             <GeoJSON
-                                data={filteredResults}
+                                data={queryResults}
                                 style={style}
                                 onEachFeature={onEachFeature}
                             />
