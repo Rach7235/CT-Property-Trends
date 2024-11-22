@@ -3,22 +3,28 @@ import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from 
 import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
-import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
 import {XYPlot, VerticalBarSeries, Hint, XAxis, YAxis, HorizontalGridLines, VerticalGridLines} from 'react-vis';
 import 'react-vis/dist/style.css';
 import Map from '../components/Map';
 
 export default function FormPage() {
     // States to hold user selected variables
+
+    // Used to track the currently selected year so when user moves slider, map updates to only show that years results for each town
+    // Also passed to map as a prop
+    // Year 2007 by default
     const [year, setYear] = useState(2007);
     const [yearRange, setYearRange] = useState({min: 2007, max: 2022});
 
-    // January by default
-    const [month, setMonth] = useState("Jan");
+
+    // Used to track the currently selected month so when user moves slider, map updates to only show that months results for each town
+    // Also passed to map as a prop
+    // January (1) by default
+    const [month, setMonth] = useState(1);
     const [isMonthSlider, setIsMonthSlider] = useState(false);
 
-    // Array of month names
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    // Array of month names. User sees months as a string but its stored in the program ass an integer like year
+   // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // State to hold the range of years for the graph
     const [yearTickRange, setYearTickRange] = useState({min: 2007, max: 2022});
@@ -58,6 +64,8 @@ export default function FormPage() {
 
     const [trendQuery, setTrendQuery] = useState("Avg Sales Amount");
     const [trendQueryVerify, setTrendQueryVerify] = useState(true);
+    // Store query results in a state to pass to the map screen as a prop
+    const [queryResults, setQueryResults] = useState([]);
 
     // If true, show the map. If false, show the graph
     const [showMap, setShowMap] = useState(true);
@@ -66,6 +74,8 @@ export default function FormPage() {
     const [chartData, setChartData] = useState([{x: 0, y: 0}]);
     const [hoveredData, setHoveredData] = useState(null);
 
+    // Used to pass to map prop to clear hover box values when hitting clear button
+    const [clear, setClear] = useState(false);
 
     const handleMouseOver = (datapoint) => {
         setHoveredData(datapoint);
@@ -96,8 +106,9 @@ export default function FormPage() {
 
     // Function to capture month from slider
     const handleMonth = (event) => {
-        // Array index is 0-based, whilst slider is 1-based so adjust value
-        const month = months[event.target.value - 1];
+        // Keep actual month value as an integer. Base 10 for decimal system (digits 0-9)
+       // const month = parseInt(event.target.value, 10);
+        const month =  event.target.value
         setMonth(month);
     }
 
@@ -252,7 +263,6 @@ export default function FormPage() {
             setTrendQuery(trendQuery);
 
             // Trend query cannot be empty
-            // trim removes whitespace characters
             if (trendQuery !== '') {
                 setTrendQueryVerify(true);
             }
@@ -286,57 +296,59 @@ export default function FormPage() {
             }
         };
 
-        // Function to handle query results
-        const handleQueryResults = (queryResults) => {
-            setChartData([]);
-            let filteredData = queryResults.filter(result => {
-                return result['SALE_YEAR'] >= yearTicks[0] && result['SALE_YEAR'] <= yearTicks[yearTicks.length - 1];
-            });
-            let data = [];
-            // Format data based on trend query
-            switch (trendQuery) {
-                case 'Avg Sales Amount':
-                    data = filteredData.map((result) => ({
-                        x: result['SALE_YEAR'],
-                        y: parseFloat(result['AVG_SALES_AMOUNT']?.trim())
-                    }));
-                    break;
-                case 'Total Sales Volume':
-                    data = filteredData.map((result) => ({
-                        x: result['SALE_YEAR'],
-                        y: result['TOTAL_SALES_VOL']
-                    }));
-                    break;
-                case 'Avg Sales Ratio':
-                    data = filteredData.map((result) => ({
-                        x: result['SALE_YEAR'],
-                        y: parseFloat((result['AVG_SALES_RATIO']?.toString() || '').trim())
-                    }));
-                    break;
-                case 'Avg Assessed Value':
-                    data = filteredData.map((result) => ({
-                        x: result['SALE_YEAR'],
-                        y: parseFloat(result['AVG_ASSESSED_VAL']?.trim())
-                    }));
-                    break;
-                case 'Total Sales Volume mnth':
-                    filteredData = queryResults;
-                    data = filteredData.map((result) => ({
-                        x: result['SALE_MONTH'],
-                        y: result['TOTAL_SALES_VOL']
-                    }));
-                    break;
-                default:
-                    console.error('Unknown trend query:', trendQuery);
-            }
-            setChartData(data);
+    // Function to handle query results
+    const handleQueryResults = (queryResults) => {
+        setChartData([]);
+        let filteredData = queryResults.features.filter(result => {
+            return result['SALE_YEAR'] >= yearTicks[0] && result['SALE_YEAR'] <= yearTicks[yearTicks.length - 1];
+        });
+        let data = [];
+        // Format data based on trend query
+        switch (trendQuery) {
+            case 'Avg Sales Amount':
+                data = filteredData.map((result) => ({
+                    x: result['SALE_YEAR'],
+                    y: parseFloat(result['AVG_SALES_AMOUNT']?.trim())
+                }));
+                break;
+            case 'Total Sales Volume':
+                data = filteredData.map((result) => ({
+                    x: result['SALE_YEAR'],
+                    y: result['TOTAL_SALES_VOL']
+                }));
+                break;
+            case 'Avg Sales Ratio':
+                data = filteredData.map((result) => ({
+                    x: result['SALE_YEAR'],
+                    y: parseFloat((result['AVG_SALES_RATIO']?.toString() || '').trim())
+                }));
+                break;
+            case 'Avg Assessed Value':
+                data = filteredData.map((result) => ({
+                    x: result['SALE_YEAR'],
+                    y: parseFloat(result['AVG_ASSESSED_VAL']?.trim())
+                }));
+                break;
+            case 'Total Sales Volume mnth':
+                filteredData = queryResults;
+                data = filteredData.map((result) => ({
+                    x: result['SALE_MONTH'],
+                    y: result['TOTAL_SALES_VOL']
+                }));
+                break;
+            default:
+                console.error('Unknown trend query:', trendQuery);
         }
+        setChartData(data);
+        return queryResults;
+    }
 
     // Function to clear the user input
     // Useful if user wants to make another query without refreshing/leaving the page or deleting all their input
     const clearInput = () => {
-        setYear('');
-        setMonth('');
+        setYear(2007);
+        setMonth(1);
+        setIsMonthSlider(false);
         setMinSalePrice('');
         setMaxSalePrice('');
         setMinSaleRatio('');
@@ -348,6 +360,11 @@ export default function FormPage() {
         setTrendQuery("Avg Sales Amount");
         setIsTyping(false);
         setYearTickRange({min: 2007, max: 2022});
+        // Reset queryResults so the map can clear
+        setQueryResults([]);
+        setClear(true);
+        // Set clear back to false immediately after for new map query
+        setTimeout(() => setClear(false), 0);
         alert("Fields successfully cleared!")
     };
 
@@ -434,13 +451,20 @@ export default function FormPage() {
                         selectedResidentialType,
                         trendQuery
                 });
+
                 // Ensure values are correct & update year tick range
-                console.log('Query Results:', queryResults);
-                handleQueryResults(queryResults);
+                console.log('Query Results in FormPage:', queryResults);
+
+                  // Use handleQueryResults to process the data
+                   const processedQueryResults = handleQueryResults(queryResults);
+
+                  // Set the processed query results state
+                  setQueryResults(processedQueryResults.features);
+
                 alert('Form submission and query generation successful!');
                 } catch (error) {
                     console.error('Form submission and query error:', error);
-                    alert('Form submission unsuccessful!');
+                    alert('Form submission unsuccessful.');
                 }
             } else {
                 alert('Please ensure all fields are valid before submitting.');
@@ -452,11 +476,14 @@ export default function FormPage() {
             }
          }
 
+         // ${months[month - 1]}` is in slider because JavaScript array is zero-indexed, i.e. months[0] = "Jan"
+         // However, slider input returns 1-indexed so subtract to get the right matching value
+        // ex. In the slider, if month = 1, do months[1-1] = months[0] = "Jan"
 
         return (
             <div style={{padding: '20px'}}>
                 {showMap ? (
-                <Map/>
+                    <Map queryResults={queryResults} selectedYear={year} selectedMonth = {month} clear={clear} isMonthSlider = {isMonthSlider}/>
                     ):(
                     <XYPlot
                         width={1000}
@@ -524,14 +551,12 @@ export default function FormPage() {
                     <input
                         type="range"
                         id="slider"
-                        // January is minimum month
+                        // January (1) is minimum month
                         min={isMonthSlider ? 1 : yearRange.minYear}
                         // Maximum sales year was 2022 in dataset
-                        // December is maximum month
+                        // December (12) is maximum month
                         max={isMonthSlider ? 12 : yearRange.maxYear}
-                        // indexOf gives 0-based index. Add 1 to get 1-based to match slider
-                        // ex. "Jan" = 0 and "Feb" = 1
-                        value={isMonthSlider ? months.indexOf(month) + 1  : year }
+                        value={isMonthSlider ? month  : year}
                         step="1"
                         // If true, set value to month. If not, set value to year
                         onChange={isMonthSlider ? handleMonth : handleYear}

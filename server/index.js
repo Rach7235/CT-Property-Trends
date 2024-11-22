@@ -62,7 +62,12 @@ app.post(`/${ServConst.queryRequest}`, async (req, res) => {
         const geoJson = await CTService.getQueryResults(formData, connection);
         res.json(geoJson);
 
+
         console.log('RESULTS:', geoJson); //TEST CODE: Prints results to console. (To be removed later)
+
+        // TEST CODE: Printing but with json.stringify to see the whole nested properties and geometry objects
+        // Javascript by default truncates it to [Object] in the console.log
+        // console.log('RESULTS:', JSON.stringify(geoJson));
     } catch (error) {
         console.error('Error retrieving query results:', error.message);
         res.status(500).send('Error retrieving query results');
