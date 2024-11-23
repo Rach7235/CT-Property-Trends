@@ -3,9 +3,9 @@ import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from 
 import TownMultiSelect from '../components/TownMultiSelect';
 import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
-import {XYPlot, VerticalBarSeries, Hint, XAxis, YAxis, HorizontalGridLines, VerticalGridLines} from 'react-vis';
 import 'react-vis/dist/style.css';
 import Map from '../components/Map';
+import Graph from '../components/Graph';
 
 export default function FormPage() {
     // States to hold user selected variables
@@ -27,7 +27,6 @@ export default function FormPage() {
    // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // State to hold the range of years for the graph
-    const [yearTickRange, setYearTickRange] = useState({min: 2007, max: 2022});
     const [yearTicks, setYearTicks] = useState(Array.from({ length: 2022 - 2007 + 1 }, (_, i) => 2007 + i));
 
     // Tracks if user has started typing so verification error messages hide until interaction
@@ -66,24 +65,13 @@ export default function FormPage() {
     const [trendQueryVerify, setTrendQueryVerify] = useState(true);
     // Store query results in a state to pass to the map screen as a prop
     const [queryResults, setQueryResults] = useState([]);
+    const [graphData, setGraphData] = useState([]);
 
     // If true, show the map. If false, show the graph
     const [showMap, setShowMap] = useState(true);
 
-    // State to hold the data for the graph and the hovered data
-    const [chartData, setChartData] = useState([{x: 0, y: 0}]);
-    const [hoveredData, setHoveredData] = useState(null);
-
     // Used to pass to map prop to clear hover box values when hitting clear button
     const [clear, setClear] = useState(false);
-
-    const handleMouseOver = (datapoint) => {
-        setHoveredData(datapoint);
-    };
-    const handleMouseOut = () => {
-        setHoveredData(null);
-    };
-
 
     // Function to show the map
     const handleShowMap = () => {
@@ -110,8 +98,7 @@ export default function FormPage() {
        // const month = parseInt(event.target.value, 10);
         const month =  event.target.value
         setMonth(month);
-    }
-
+    };
     // Function to capture minimum sales price
     const handleMinSalePrice = (event) => {
         const minSalePrice = event.target.value;
@@ -280,25 +267,8 @@ export default function FormPage() {
             console.log('Trend Query:', trendQuery);
         };
 
-        // Function to handle year tick range
-        const handleTickRange = () => {
-            if (minSaleYear !== '' && maxSaleYear !== '') {
-                setYearTickRange({min: Number(minSaleYear), max: Number(maxSaleYear)});
-            }
-            if (minSaleYear === '' && maxSaleYear !== '') {
-                setYearTickRange({min: 2007, max: Number(maxSaleYear)});
-            }
-            if (minSaleYear !== '' && maxSaleYear === '') {
-                setYearTickRange({min: Number(minSaleYear), max: 2022});
-            }
-            if (minSaleYear === '' && maxSaleYear === '') {
-                setYearTickRange({min: 2007, max: 2022});
-            }
-        };
-
     // Function to handle query results
     const handleQueryResults = (queryResults) => {
-        setChartData([]);
         let filteredData = queryResults.features.filter(result => {
             return result['SALE_YEAR'] >= yearTicks[0] && result['SALE_YEAR'] <= yearTicks[yearTicks.length - 1];
         });
@@ -338,7 +308,6 @@ export default function FormPage() {
             default:
                 console.error('Unknown trend query:', trendQuery);
         }
-        setChartData(data);
         return queryResults;
     }
 
@@ -358,7 +327,6 @@ export default function FormPage() {
         setSelectedResidentialType(residentialType);
         setTrendQuery("Avg Sales Amount");
         setIsTyping(false);
-        setYearTickRange({min: 2007, max: 2022});
         // Reset queryResults so the map can clear
         setQueryResults([]);
         setClear(true);
@@ -413,19 +381,6 @@ export default function FormPage() {
             getYearRange();
             }, []);
 
-        // Function to update year ticks when year range changes
-        useEffect(() => {
-            const yearTicksUpdated = Array.from(
-                { length: yearTickRange.max - yearTickRange.min + 1 }, (_, i) => yearTickRange.min + i);
-            setYearTicks(yearTicksUpdated);
-            console.log('Year Ticks:', yearTicksUpdated);
-        }, [yearTickRange]);
-
-        // Function to update year tick range when min/max sale year changes
-        useEffect (() => {
-            handleTickRange();
-        }, [minSaleYear, maxSaleYear]);
-
         // Function to submit user fields to backend
         const handleSubmit = async () => {
             // Ensure all fields are valid
@@ -454,7 +409,10 @@ export default function FormPage() {
                 // Ensure values are correct & update year tick range
                 console.log('Query Results in FormPage:', queryResults);
 
-                  // Use handleQueryResults to process the data
+                // Set graph data to original query results
+                setGraphData(queryResults);
+
+                // Use handleQueryResults to process the data
                    const processedQueryResults = handleQueryResults(queryResults);
 
                   // Set the processed query results state
@@ -484,35 +442,10 @@ export default function FormPage() {
                 {showMap ? (
                     <Map queryResults={queryResults} selectedYear={year} selectedMonth = {month} clear={clear} isMonthSlider = {isMonthSlider}/>
                     ):(
-                    <XYPlot
-                        width={1000}
-                        height={600}
-                        xType="ordinal"
-                        margin={{ left: 75, right: 75, top: 30, bottom: 30 }}>
-                        <HorizontalGridLines />
-                        <VerticalGridLines />
-                        <XAxis
-                            tickLabelAngle={45}
-                            tickPadding = {25}
+                        <Graph
+                            trendQuery={trendQuery}
+                            graphData={graphData}
                         />
-                        <YAxis title={trendQuery}/>
-                        <VerticalBarSeries
-                            data={chartData}
-                            barGap={1}
-                            barWidth={0.6}
-                            color="#0047AB"
-                            onValueMouseOver={handleMouseOver}
-                            onValueMouseOut={handleMouseOut}
-                        />
-                        {hoveredData && (
-                            <Hint value={hoveredData}>
-                                <div style={{background: 'white', padding: '10px', border: '2px solid #ccc', color: 'black'}}>
-                                    <h4>{hoveredData.x}</h4>
-                                    <p>{hoveredData.y}</p>
-                                </div>
-                            </Hint>
-                        )}
-                    </XYPlot>
                     )
                 }
                 <div style={{marginTop: '20px', display: 'flex', gap: '10px'}}>
