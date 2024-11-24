@@ -22,7 +22,7 @@ export default function FormPage() {
     const [isMonthSlider, setIsMonthSlider] = useState(false);
 
     // Array of month names. User sees months as a string but its stored in the program ass an integer like year
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
     // State to hold the range of years for the graph
     const [yearTicks, setYearTicks] = useState(Array.from({ length: 2022 - 2007 + 1 }, (_, i) => 2007 + i));
@@ -89,7 +89,6 @@ export default function FormPage() {
         const year = event.target.value;
         setYear(year);
     };
-
 
 
     // Function to capture month from slider
