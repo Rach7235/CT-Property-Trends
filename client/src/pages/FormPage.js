@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {fetchTowns, fetchResidentialTypes, submitFormAndQuery, fetchYears} from '../services/api.js';
-import TownMultiSelect from '../components/TownMultiSelect';
-import ResidentialTypeMultiSelect from '../components/ResidentialTypeMultiSelect';
 import {MultiSelect} from 'react-multi-select-component';
 import 'react-vis/dist/style.css';
 import Map from '../components/Map';
@@ -24,7 +22,7 @@ export default function FormPage() {
     const [isMonthSlider, setIsMonthSlider] = useState(false);
 
     // Array of month names. User sees months as a string but its stored in the program ass an integer like year
-   // const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
     // State to hold the range of years for the graph
     const [yearTicks, setYearTicks] = useState(Array.from({ length: 2022 - 2007 + 1 }, (_, i) => 2007 + i));
@@ -92,11 +90,13 @@ export default function FormPage() {
         setYear(year);
     };
 
+
+
     // Function to capture month from slider
     const handleMonth = (event) => {
         // Keep actual month value as an integer. Base 10 for decimal system (digits 0-9)
-       // const month = parseInt(event.target.value, 10);
-        const month =  event.target.value
+        const month = parseInt(event.target.value, 10);
+       // const month =  event.target.value
         setMonth(month);
     };
     // Function to capture minimum sales price
@@ -440,7 +440,7 @@ export default function FormPage() {
         return (
             <div style={{padding: '20px'}}>
                 {showMap ? (
-                    <Map queryResults={queryResults} selectedYear={year} selectedMonth = {month} clear={clear} isMonthSlider = {isMonthSlider}/>
+                    <Map trendQuery={trendQuery} queryResults={queryResults} selectedYear={year} selectedMonth = {month} clear={clear} isMonthSlider = {isMonthSlider}/>
                     ):(
                         <Graph
                             trendQuery={trendQuery}
@@ -478,7 +478,7 @@ export default function FormPage() {
 
                 <div style={{marginTop:'20px', marginBottom: '20px'}}>
                     <label htmlFor="slider">
-                        {isMonthSlider ? `Month: ${month}` : `Year: ${year}`}</label>
+                        {isMonthSlider ? `Month: ${months[month - 1]}` : `Year: ${year}`}</label>
                     <br/>
                     <input
                         type="range"
