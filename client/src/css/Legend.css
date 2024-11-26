@@ -1,15 +1,15 @@
 .legend {
-    position: absolute;
-    z-index: 999;
+    position: relative;
+    /* z-index: 999;*/
     right: 15px;
-    bottom: 335px;
-    padding:20px 10px;
+    /* bottom: 335px;
+    padding:20px 10px; */
     box-shadow: 0 0 5px 0 rgba(184, 140, 140, 0.3);
     font-size:12px;
     letter-spacing:2px;
     background-color: white;
     border-radius:5px;
-    width: 287px;
+    width: 260px;
     border: 6px solid #0047AB;
 }
 .legend > div {

@@ -12,14 +12,12 @@ const Map = ({trendQuery, queryResults, selectedYear, selectedMonth, isMonthSlid
     const yearRef = useRef(selectedYear);
     const monthRef = useRef(selectedMonth);
     const sliderRef = useRef(isMonthSlider);
-    const queryResultsRef = useRef(queryResults);
 
     //To update the values that are "captured" in the function
     useEffect(() => {
         yearRef.current = selectedYear;
         monthRef.current = selectedMonth;
         sliderRef.current = isMonthSlider;
-        queryResultsRef.current = queryResults;
     }, [selectedYear, selectedMonth, isMonthSlider, queryResults]);
 
     // Reset map state when queryResults is cleared
@@ -111,49 +109,49 @@ const Map = ({trendQuery, queryResults, selectedYear, selectedMonth, isMonthSlid
     });
 
     const mapStyle = {
-        height: '75vh',
-        width: '85%',
-        margin: '0 auto',
+        height: '100%',
+        width: '100%',
+        margin: '10 auto',
         position: 'relative',
-        right: '7%',
     };
 
 
     return (
         <div className='container'>
-            {trendQuery && <Legend trendQuery={trendQuery} />}
-            <div className="">
-                <div className="">
-                    <div className="town-info-hover"></div>
-                    {onselect.TOWN_NAME && (
-                        <ul className="town-info">
-                            <strong>Real Estate Information</strong>
-                            <li>Town: {onselect.TOWN_NAME}</li>
-                            <li>{isMonthSlider ? `Month ${selectedMonth}` : `Year ${selectedYear}`}: {onselect[isMonthSlider ? selectedMonth : selectedYear]}</li>
-                        </ul>
-                    )}
-                    <MapContainer
-                        center={[41.599998, -72.699997]}
-                        zoom={9}
-                        scrollWheelZoom={false}
-                        style={mapStyle}
-                    >
-                        <TileLayer
-                            attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            <div className='map-container'>
+                <MapContainer
+                    center={[41.599998, -72.699997]}
+                    zoom={9}
+                    scrollWheelZoom={false}
+                    style={mapStyle}
+                >
+                    <TileLayer
+                        attribution='&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+                    />
+                    {queryResults && queryResults.length > 0 ? (
+                        <GeoJSON
+                            key={JSON.stringify(queryResults)}
+                            data={queryResults}
+                            style={style}
+                            onEachFeature={onEachFeature}
                         />
-                        {queryResults && queryResults.length > 0 ? (
-                            <GeoJSON
-                                key={JSON.stringify(queryResults)}
-                                data={queryResults}
-                                style={style}
-                                onEachFeature={onEachFeature}
-                            />
-                        ) : (
-                            <div>Loading map data...</div>
-                        )}
-                    </MapContainer>
-                </div>
+                    ) : (
+                        <div>Loading map data...</div>
+                    )}
+                </MapContainer>
+            </div>
+    
+            <div className='info-container'>
+                {trendQuery && <Legend trendQuery={trendQuery} />}
+                <div className="town-info-hover"></div>
+                {onselect.TOWN_NAME && (
+                    <ul className="town-info">
+                        <strong>Real Estate Information</strong>
+                        <li>Town: {onselect.TOWN_NAME}</li>
+                        <li>{isMonthSlider ? `Month ${selectedMonth}` : `Year ${selectedYear}`}: {onselect[isMonthSlider ? selectedMonth : selectedYear]}</li>
+                    </ul>
+                )}
             </div>
         </div>
     )
