@@ -14,6 +14,11 @@ Users can specify the information they’re looking for by filtering by town, sp
 
 Then, users will visualize the data through two primary graphical representations: an interactive map and a comprehensive trend graph
 
+# Requirement
+- node.js: Javascript runtime environment
+- npm: package manager for the Javascript
+- how to install: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+
 # Project Startup Instructions
 First, clone the repository
 ```
