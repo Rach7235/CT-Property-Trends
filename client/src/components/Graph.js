@@ -379,7 +379,7 @@ const Graph = ({trendQuery, graphData}) => {
                                 y: item.y
                             }))}
                             color={town.color}
-                            onNearestXY={(datapoint) => handleMouseOver(datapoint, town.title)}
+                            onNearestX={(datapoint) => handleMouseOver(datapoint, town.title)}
                             onSeriesMouseOut={handleMouseOut}
                             curve={'curveMonotoneX'}
                             animation

@@ -16,7 +16,13 @@ Then, users will visualize the data through two primary graphical representation
 
 # Project Startup Instructions
 First, clone the repository
+```
+git clone https://github.com/Rach7235/CT-Property-Trends.git
+```
+then move to CT-Property-Trends directory
+```
 cd ./CT-Property-Trends
+```
 
 ## Frontend
 1. cd ./client
