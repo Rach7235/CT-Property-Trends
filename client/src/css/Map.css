@@ -20,7 +20,7 @@
   display: flex;
   flex-direction: column;
   align-items: right;
-  top: 120px;
+  top: 400px;
   right: 15px;
   padding: 10px 10px;
   border-radius: 10%;
@@ -40,7 +40,7 @@
 
 .town-info-hover {
   z-index: 999;
-  top: 120px;
+  top: 400px;
   right: 15px;
   height: 20%;
   width: 12%;
@@ -59,7 +59,7 @@
 @media (max-width: 768px) {
   .town-info {
   align-items: right;
-  top: 120px;
+  top: 180px;
   right: 38px;
   padding: 10px 10px;
   width: 30%;
@@ -69,8 +69,8 @@
 }
 .town-info-hover{
   z-index: 999;
-  top: 120px;
-  right: 38px;
+  top: 400px;
+  right: 15px;
   height: 15%;
   width:30%;
   padding: 10px 10px;

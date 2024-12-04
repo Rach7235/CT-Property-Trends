@@ -2,7 +2,7 @@
     position: absolute;
     z-index: 999;
     right: 15px;
-    bottom: 335px;
+    bottom: 750px;
     padding:20px 10px;
     box-shadow: 0 0 5px 0 rgba(184, 140, 140, 0.3);
     font-size:12px;
@@ -37,8 +37,9 @@
 
     }
     .legend {
+        top:180px;
         left: 38px;
-        bottom: 100px;
+        bottom: 10px;
         font-size:10px;
         letter-spacing:0px;
         width: 100px;
