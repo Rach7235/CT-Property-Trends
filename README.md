@@ -14,7 +14,7 @@ Users can specify the information they’re looking for by filtering by town, sp
 
 Then, users will visualize the data through two primary graphical representations: an interactive map and a comprehensive trend graph
 
-# Requirement
+# Requirements
 - node.js: Javascript runtime environment
 - npm: package manager for the Javascript
 - how to install: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
@@ -43,7 +43,7 @@ cd ./CT-Property-Trends
 - The backend runs on port 2000 by default
 
 ## Database
-The database used for this project is Oracle
+The database used for this project is Oracle DB
 - A UF VPN must be connected for database use
 
 ### Dataset
