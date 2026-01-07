@@ -14,6 +14,10 @@ Users can specify the information they’re looking for by filtering by town, sp
 
 Then, users will visualize the data through two primary graphical representations: an interactive map and a comprehensive trend graph
 
+![Trend Map](https://github.com/Rach7235/CT-Property-Trends/blob/main/client/public/map-image.png)
+
+![Trend Graph](https://github.com/Rach7235/CT-Property-Trends/blob/main/client/public/graph-image.png)
+
 # Requirements
 - node.js: Javascript runtime environment
 - npm: package manager for the Javascript
